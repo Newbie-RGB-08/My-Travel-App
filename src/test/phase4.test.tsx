@@ -98,7 +98,7 @@ describe('阶段 4：交通安排模块', () => {
       renderPage()
       await screen.findByText('CA1234', {}, FIND_OPTS)
       await user.click(screen.getByLabelText('编辑交通安排'))
-      const noInput = await screen.findByDisplayValue('CA1234', FIND_OPTS)
+      const noInput = await screen.findByDisplayValue('CA1234', {}, FIND_OPTS)
       await user.clear(noInput)
       await user.type(noInput, 'CA9999')
       await user.click(screen.getByRole('button', { name: '保存' }))
@@ -281,10 +281,11 @@ describe('阶段 4：交通安排模块', () => {
       expect(await screen.findByText('航班', {}, FIND_OPTS)).toBeInTheDocument()
       expect(screen.getByText('火车')).toBeInTheDocument()
       expect(screen.getByText('大巴')).toBeInTheDocument()
-      // emoji 图标
-      expect(screen.getByText('✈️')).toBeInTheDocument()
-      expect(screen.getByText('🚄')).toBeInTheDocument()
-      expect(screen.getByText('🚌')).toBeInTheDocument()
+      // 类型图标：lucide 线性 SVG（带 text-fg-2 类），每种交通一张卡
+      for (const type of ['flight', 'train', 'bus']) {
+        const card = document.querySelector(`[data-transport-type="${type}"]`)
+        expect(card?.querySelector('svg.text-fg-2')).toBeTruthy()
+      }
     })
   })
 

@@ -178,9 +178,10 @@ describe('阶段 9：跨模块关联与跳转', () => {
       )
       const acts = await crud.listActivities(t.id)
       expect(acts).toHaveLength(1)
-      expect(acts[0].linkedTransportIds).toEqual([tr.id])
-      expect(acts[0].linkedExpenseIds).toEqual([ex.id])
-      expect(acts[0].linkedGuideIds).toEqual([gu.id])
+      const act = acts[0]!
+      expect(act.linkedTransportIds).toEqual([tr.id])
+      expect(act.linkedExpenseIds).toEqual([ex.id])
+      expect(act.linkedGuideIds).toEqual([gu.id])
       // 卡片出现跳转链接
       expect(
         await screen.findByRole('link', { name: '跳转交通' }, FIND_OPTS),
@@ -208,7 +209,7 @@ describe('阶段 9：跨模块关联与跳转', () => {
       await screen.findByText('故宫', {}, FIND_OPTS)
       // 点活动卡片进入编辑
       await user.click(screen.getByText('故宫'))
-      await screen.findByDisplayValue('故宫', FIND_OPTS)
+      await screen.findByDisplayValue('故宫', {}, FIND_OPTS)
       // 取消交通勾选（复选框已选中）
       const trLabel = screen.getByText('CA1234')
       const trBox = trLabel.parentElement?.querySelector(

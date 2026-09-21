@@ -1,26 +1,36 @@
-import { Pencil, Trash2 } from 'lucide-react'
+import {
+  Pencil,
+  Trash2,
+  Plane,
+  TrainFront,
+  Bus,
+  TramFront,
+  CarTaxiFront,
+  Car,
+  type LucideIcon,
+} from 'lucide-react'
 import type { Transport, TransportStatus, TransportType } from '@/types'
 import { formatDateTime } from '@/utils/format'
 
 export const TRANSPORT_META: Record<
   TransportType,
-  { label: string; icon: string }
+  { label: string; icon: LucideIcon }
 > = {
-  flight: { label: '航班', icon: '✈️' },
-  train: { label: '火车', icon: '🚄' },
-  bus: { label: '大巴', icon: '🚌' },
-  metro: { label: '地铁', icon: '🚇' },
-  taxi: { label: '出租', icon: '🚕' },
-  self: { label: '自驾', icon: '🚗' },
+  flight: { label: '航班', icon: Plane },
+  train: { label: '火车', icon: TrainFront },
+  bus: { label: '大巴', icon: Bus },
+  metro: { label: '地铁', icon: TramFront },
+  taxi: { label: '出租', icon: CarTaxiFront },
+  self: { label: '自驾', icon: Car },
 }
 
 export const STATUS_META: Record<
   TransportStatus,
-  { label: string; cls: string }
+  { label: string; tone: 'warn' | 'ok' | 'neutral'; strike?: boolean }
 > = {
-  pending: { label: '待出行', cls: 'bg-amber-100 text-amber-700' },
-  done: { label: '已完成', cls: 'bg-green-100 text-green-700' },
-  cancelled: { label: '已取消', cls: 'bg-gray-100 text-gray-500 line-through' },
+  pending: { label: '待出行', tone: 'warn' },
+  done: { label: '已完成', tone: 'ok' },
+  cancelled: { label: '已取消', tone: 'neutral', strike: true },
 }
 
 export const STATUS_OPTIONS: TransportStatus[] = ['pending', 'done', 'cancelled']
@@ -42,6 +52,7 @@ export function TransportCard({
 }: TransportCardProps) {
   const t = TRANSPORT_META[transport.type]
   const s = STATUS_META[transport.status]
+  const TIcon = t.icon
 
   return (
     <div
@@ -53,29 +64,28 @@ export function TransportCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-lg" aria-hidden="true">
-              {t.icon}
-            </span>
-            <span className="text-xs font-medium text-gray-500">
+            <TIcon className="h-4 w-4 shrink-0 text-fg-2" />
+            <span className="text-xs font-medium text-fg-2">
               {t.label}
             </span>
             {transport.no && (
-              <span className="text-sm font-semibold text-gray-900">
+              <span className="text-sm font-semibold text-fg-1">
                 {transport.no}
               </span>
             )}
             <span
-              className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${s.cls}`}
+              className={`badge ${s.strike ? 'line-through' : ''}`}
+              data-tone={s.tone}
             >
               {s.label}
             </span>
           </div>
-          <div className="mt-2 flex items-center gap-2 text-sm text-gray-900">
+          <div className="mt-2 flex items-center gap-2 text-sm text-fg-1">
             <span className="truncate">{transport.from || '—'}</span>
-            <span className="text-gray-400">→</span>
+            <span className="text-fg-3">→</span>
             <span className="truncate">{transport.to || '—'}</span>
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+          <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-fg-2">
             <span>
               出发 <time>{formatDateTime(transport.departAt)}</time>
             </span>
@@ -89,7 +99,7 @@ export function TransportCard({
             {transport.checkinInfo && <span>{transport.checkinInfo}</span>}
           </div>
           {transport.note && (
-            <p className="mt-1 text-xs text-gray-500 line-clamp-2">
+            <p className="mt-1 text-xs text-fg-2 line-clamp-2">
               {transport.note}
             </p>
           )}
@@ -108,7 +118,7 @@ export function TransportCard({
           {onDelete && (
             <button
               type="button"
-              className="btn-ghost p-1 text-red-500 hover:bg-red-50"
+              className="btn-ghost p-1 text-danger hover:bg-danger/10"
               onClick={onDelete}
               aria-label="删除交通安排"
             >
@@ -118,8 +128,8 @@ export function TransportCard({
         </div>
       </div>
       {onStatusChange && (
-        <div className="mt-3 flex items-center gap-1 border-t border-gray-100 pt-2">
-          <span className="mr-1 text-xs text-gray-400">状态</span>
+        <div className="mt-3 flex items-center gap-1 border-t border-line-soft pt-2">
+          <span className="mr-1 text-xs text-fg-3">状态</span>
           {STATUS_OPTIONS.map((opt) => {
             const meta = STATUS_META[opt]
             const active = transport.status === opt
@@ -128,11 +138,12 @@ export function TransportCard({
                 key={opt}
                 type="button"
                 onClick={() => onStatusChange(opt)}
-                className={`rounded px-2 py-0.5 text-xs font-medium transition ${
+                className={
                   active
-                    ? meta.cls
-                    : 'text-gray-400 hover:bg-gray-50'
-                }`}
+                    ? 'badge'
+                    : 'rounded px-2 py-0.5 text-xs font-medium text-fg-3 transition-colors hover:bg-white/10'
+                }
+                data-tone={active ? meta.tone : undefined}
                 aria-pressed={active}
               >
                 {meta.label}

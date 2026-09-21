@@ -127,7 +127,7 @@ describe('阶段 8：首页总览模块', () => {
         '[data-transport-status="pending"]',
       ) as HTMLElement
       expect(pendingItem).toBeTruthy()
-      expect(pendingItem.className).toContain('bg-amber-50')
+      expect(pendingItem.className).toContain('bg-warn')
     })
 
     it('消费汇总：分类占比小图出现各分类段', async () => {

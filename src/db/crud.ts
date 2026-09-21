@@ -94,15 +94,13 @@ export async function removeActivity(id: string): Promise<void> {
 }
 
 // ===== Transport =====
-export async function listTransports(): Promise<Transport[]>
-export async function listTransports(tripId: string): Promise<Transport[]>
 export async function listTransports(tripId?: string): Promise<Transport[]> {
   if (tripId === undefined) return db.transports.toArray()
   return db.transports.where('tripId').equals(tripId).toArray()
 }
 export async function listTransportsSorted(tripId?: string): Promise<Transport[]> {
   const items = await listTransports(tripId)
-  return items.sort((a, b) => a.departAt.localeCompare(b.departAt))
+  return items.sort((a, b) => (a.departAt ?? '').localeCompare(b.departAt ?? ''))
 }
 export async function getTransport(id: string): Promise<Transport | undefined> {
   return db.transports.get(id)
@@ -124,15 +122,13 @@ export async function removeTransport(id: string): Promise<void> {
 }
 
 // ===== Expense =====
-export async function listExpenses(): Promise<Expense[]>
-export async function listExpenses(tripId: string): Promise<Expense[]>
 export async function listExpenses(tripId?: string): Promise<Expense[]> {
   if (tripId === undefined) return db.expenses.toArray()
   return db.expenses.where('tripId').equals(tripId).toArray()
 }
 export async function listExpensesSorted(tripId?: string): Promise<Expense[]> {
   const items = await listExpenses(tripId)
-  return items.sort((a, b) => b.time.localeCompare(a.time))
+  return items.sort((a, b) => (b.time ?? '').localeCompare(a.time ?? ''))
 }
 export async function listExpensesByActivity(
   activityId: string,

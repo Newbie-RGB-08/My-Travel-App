@@ -113,7 +113,7 @@ describe('阶段 7：地图详情模块', () => {
       expect(await screen.findByText('故宫', {}, FIND_OPTS)).toBeInTheDocument()
       const all = await crud.listMapMarks()
       expect(all).toHaveLength(1)
-      expect(all[0].name).toBe('故宫')
+      expect(all[0]!.name).toBe('故宫')
     })
 
     it('模拟地图点击 → 表单带预填坐标 → 保存', async () => {
@@ -121,7 +121,7 @@ describe('阶段 7：地图详情模块', () => {
       renderPage()
       await screen.findByText('还没有标注', {}, FIND_OPTS)
       await user.click(screen.getByRole('button', { name: '模拟点击地图添加标注' }))
-      const latInput = await screen.findByDisplayValue('39.9163', FIND_OPTS)
+      const latInput = await screen.findByDisplayValue('39.9163', {}, FIND_OPTS)
       expect(latInput).toBeInTheDocument()
       expect(screen.getByDisplayValue('116.3972')).toBeInTheDocument()
       await user.type(screen.getByPlaceholderText('如：故宫'), '天安门')
@@ -143,7 +143,7 @@ describe('阶段 7：地图详情模块', () => {
       renderPage()
       await screen.findByText('原标注', {}, FIND_OPTS)
       await user.click(screen.getByLabelText('编辑标注'))
-      const nameInput = await screen.findByDisplayValue('原标注', FIND_OPTS)
+      const nameInput = await screen.findByDisplayValue('原标注', {}, FIND_OPTS)
       await user.clear(nameInput)
       await user.type(nameInput, '改后标注')
       await user.click(screen.getByRole('button', { name: '保存' }))
@@ -210,8 +210,8 @@ describe('阶段 7：地图详情模块', () => {
       // 逐个加入
       const adds = await screen.findAllByRole('button', { name: '加入路线' })
       expect(adds).toHaveLength(2)
-      await user.click(adds[0])
-      await user.click(adds[1])
+      await user.click(adds[0]!)
+      await user.click(adds[1]!)
       await user.type(
         screen.getByPlaceholderText('路线名称（可选）'),
         '中轴线',
@@ -228,8 +228,8 @@ describe('阶段 7：地图详情模块', () => {
       expect(await screen.findByText('中轴线', {}, FIND_OPTS)).toBeInTheDocument()
       const routes = await crud.listRoutes()
       expect(routes).toHaveLength(1)
-      expect(routes[0].name).toBe('中轴线')
-      expect(routes[0].markIds).toHaveLength(2)
+      expect(routes[0]!.name).toBe('中轴线')
+      expect(routes[0]!.markIds).toHaveLength(2)
     })
 
     it('删除路线：二次确认后消失', async () => {

@@ -38,16 +38,16 @@ export function Modal({
   if (!open) return null
   const node = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4"
+      className="modal-scrim"
       onClick={onClose}
     >
       <div
-        className={`card relative flex max-h-[90vh] w-full flex-col overflow-hidden ${sizeMap[size]}`}
+        className={`card glass-thick modal-panel relative flex max-h-[90vh] w-full flex-col overflow-hidden ${sizeMap[size]}`}
         onClick={(e) => e.stopPropagation()}
       >
         {title !== undefined && (
-          <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
-            <h3 className="text-base font-semibold text-gray-900">{title}</h3>
+          <div className="flex items-center justify-between border-b border-line-soft px-5 py-3">
+            <h3 className="text-base font-semibold text-fg-1">{title}</h3>
             <button
               type="button"
               className="btn-ghost -mr-1 p-1"
@@ -60,7 +60,7 @@ export function Modal({
         )}
         <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>
         {footer && (
-          <div className="flex items-center justify-end gap-2 border-t border-gray-100 px-5 py-3">
+          <div className="flex items-center justify-end gap-2 border-t border-line-soft px-5 py-3">
             {footer}
           </div>
         )}

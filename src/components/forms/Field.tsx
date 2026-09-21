@@ -11,15 +11,15 @@ interface FieldProps {
 export function Field({ label, required, error, children, hint }: FieldProps) {
   return (
     <label className="block">
-      <span className="mb-1 block text-sm font-medium text-gray-700">
+      <span className="mb-1 block text-sm font-medium text-fg-2">
         {label}
-        {required && <span className="ml-0.5 text-red-500">*</span>}
+        {required && <span className="ml-0.5 text-danger">*</span>}
       </span>
       {children}
       {hint && !error && (
-        <span className="mt-1 block text-xs text-gray-400">{hint}</span>
+        <span className="mt-1 block text-xs text-fg-3">{hint}</span>
       )}
-      {error && <span className="mt-1 block text-xs text-red-500">{error}</span>}
+      {error && <span className="mt-1 block text-xs text-danger">{error}</span>}
     </label>
   )
 }
@@ -65,9 +65,9 @@ export const Checkbox = forwardRef<
         ref={ref}
         type="checkbox"
         {...props}
-        className={className ?? 'h-4 w-4 rounded border-gray-300 text-brand-600'}
+        className={className ?? 'h-4 w-4 rounded border-line text-brand-600'}
       />
-      {label && <span className="text-sm text-gray-700">{label}</span>}
+      {label && <span className="text-sm text-fg-2">{label}</span>}
     </span>
   )
 })

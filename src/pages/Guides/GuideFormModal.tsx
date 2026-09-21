@@ -31,13 +31,13 @@ interface FormValues {
   tripId: string
 }
 
-export const CATEGORY_OPTIONS: { value: GuideCategory; label: string; icon: string }[] = [
-  { value: 'sight', label: '景点', icon: '🏛️' },
-  { value: 'food', label: '美食', icon: '🍜' },
-  { value: 'shop', label: '购物', icon: '🛍️' },
-  { value: 'culture', label: '文化', icon: '🎎' },
-  { value: 'pitfall', label: '避坑', icon: '⚠️' },
-  { value: 'gear', label: '装备', icon: '🎒' },
+export const CATEGORY_OPTIONS: { value: GuideCategory; label: string }[] = [
+  { value: 'sight', label: '景点' },
+  { value: 'food', label: '美食' },
+  { value: 'shop', label: '购物' },
+  { value: 'culture', label: '文化' },
+  { value: 'pitfall', label: '避坑' },
+  { value: 'gear', label: '装备' },
 ]
 
 function buildDefaults(
@@ -80,7 +80,7 @@ function AttachmentThumb({
   )
   useEffect(() => () => URL.revokeObjectURL(url), [url])
   return (
-    <div className="group relative h-20 w-20 overflow-hidden rounded border border-gray-200">
+    <div className="group relative h-20 w-20 overflow-hidden rounded border border-line">
       <img src={url} alt="附件" className="h-full w-full object-cover" />
       <button
         type="button"
@@ -104,7 +104,7 @@ export function GuideFormModal({
   const [submitting, setSubmitting] = useState(false)
   const [attachments, setAttachments] = useState<Attachment[]>([])
   const trips = useLiveQuery(() => db.trips.orderBy('startDate').toArray(), []) ?? []
-  const { register, handleSubmit, reset, watch } = useForm<FormValues>({
+  const { register, handleSubmit, reset } = useForm<FormValues>({
     defaultValues: buildDefaults(initial, defaultTripId),
   })
 
@@ -135,6 +135,7 @@ export function GuideFormModal({
     if (!items) return
     for (let i = 0; i < items.length; i++) {
       const item = items[i]
+      if (!item) continue
       if (item.kind === 'file' && item.type.startsWith('image/')) {
         e.preventDefault()
         const blob = item.getAsFile()
@@ -186,8 +187,6 @@ export function GuideFormModal({
     }
   })
 
-  const watchTripId = watch('tripId')
-
   return (
     <Modal
       open={open}
@@ -222,7 +221,7 @@ export function GuideFormModal({
             <Select {...register('category')}>
               {CATEGORY_OPTIONS.map((c) => (
                 <option key={c.value} value={c.value}>
-                  {c.icon} {c.label}
+                  {c.label}
                 </option>
               ))}
             </Select>
@@ -239,7 +238,7 @@ export function GuideFormModal({
         {/* 附件区 */}
         <Field label="图片附件">
           <div className="space-y-2">
-            <label className="inline-flex cursor-pointer items-center gap-1 rounded border border-dashed border-gray-300 px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50">
+            <label className="inline-flex cursor-pointer items-center gap-1 rounded border border-dashed border-line px-3 py-1.5 text-xs text-fg-2 transition-colors hover:bg-white/8">
               <Upload className="h-3 w-3" />
               选择图片上传
               <input
@@ -262,7 +261,7 @@ export function GuideFormModal({
               </div>
             )}
             {attachments.length === 0 && (
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-fg-3">
                 也可在正文区域直接 Ctrl+V 粘贴截图
               </p>
             )}

@@ -125,11 +125,11 @@ export default function Expenses() {
         title="消费记录"
         subtitle={
           currentTrip ? (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-fg-2">
               行程「{currentTrip.name}」· 共 {expenses.length} 条
             </span>
           ) : (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-fg-2">
               未选行程，显示全部 {expenses.length} 条
             </span>
           )
@@ -145,33 +145,33 @@ export default function Expenses() {
       {/* 汇总区 */}
       <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
         <div className="card p-4">
-          <div className="text-xs text-gray-500">总花费</div>
-          <div className="mt-1 text-2xl font-semibold text-gray-900">
+          <div className="text-xs text-fg-2">总花费</div>
+          <div className="mt-1 text-2xl font-semibold text-fg-1">
             {formatMoney(total)}
           </div>
-          <div className="mt-2 text-xs text-gray-400">
+          <div className="mt-2 text-xs text-fg-3">
             {expenses.length} 条记录
           </div>
         </div>
         <div className="card p-4">
-          <div className="text-xs text-gray-500">预算 vs 实际</div>
+          <div className="text-xs text-fg-2">预算 vs 实际</div>
           {budget > 0 ? (
             <>
               <div className="mt-1 flex items-baseline gap-2 text-sm">
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-fg-1">
                   {formatMoney(total)}
                 </span>
-                <span className="text-gray-400">/ {formatMoney(budget)}</span>
+                <span className="text-fg-3">/ {formatMoney(budget)}</span>
               </div>
-              <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-100">
+              <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
                 <div
-                  className={`h-full rounded-full ${overspent ? 'bg-red-500' : 'bg-brand-500'}`}
+                  className={`h-full rounded-full ${overspent ? 'bg-danger' : 'bg-brand-500'}`}
                   style={{ width: `${pct}%` }}
                   aria-label="消费进度"
                 />
               </div>
               <div
-                className={`mt-2 text-xs ${overspent ? 'text-red-600' : 'text-gray-500'}`}
+                className={`mt-2 text-xs ${overspent ? 'text-danger' : 'text-fg-2'}`}
               >
                 {overspent
                   ? `超支 ${formatMoney(Math.abs(remaining))}`
@@ -179,7 +179,7 @@ export default function Expenses() {
               </div>
             </>
           ) : (
-            <div className="mt-3 text-xs text-gray-400">
+            <div className="mt-3 text-xs text-fg-3">
               {currentTripId
                 ? '该行程未设预算'
                 : '未选择行程，无法对比预算'}
@@ -187,9 +187,9 @@ export default function Expenses() {
           )}
         </div>
         <div className="card p-4">
-          <div className="text-xs text-gray-500">分类占比</div>
+          <div className="text-xs text-fg-2">分类占比</div>
           {pieData.length === 0 ? (
-            <div className="mt-3 text-xs text-gray-400">暂无数据</div>
+            <div className="mt-3 text-xs text-fg-3">暂无数据</div>
           ) : (
             <div className="mt-1 flex items-center gap-3">
               <div className="h-20 w-20" aria-label="分类占比饼图">
@@ -209,6 +209,16 @@ export default function Expenses() {
                     </Pie>
                     <Tooltip
                       formatter={(v: number, n: string) => [formatMoney(v), n]}
+                      contentStyle={{
+                        backgroundColor: 'rgba(20,24,32,.92)',
+                        border: '1px solid rgba(255,255,255,.09)',
+                        borderRadius: 12,
+                        backdropFilter: 'blur(20px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        boxShadow: '0 12px 32px rgba(0,0,0,.45)',
+                      }}
+                      itemStyle={{ color: 'rgba(255,255,255,.92)' }}
+                      labelStyle={{ color: 'rgba(255,255,255,.62)' }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -216,14 +226,14 @@ export default function Expenses() {
               <ul className="flex-1 space-y-1 text-xs">
                 {pieData.map((d) => (
                   <li key={d.key} className="flex items-center justify-between">
-                    <span className="flex items-center gap-1 text-gray-600">
+                    <span className="flex items-center gap-1 text-fg-2">
                       <span
                         className="inline-block h-2 w-2 rounded-full"
                         style={{ backgroundColor: d.color }}
                       />
                       {d.name}
                     </span>
-                    <span className="text-gray-900">{formatMoney(d.value)}</span>
+                    <span className="text-fg-1">{formatMoney(d.value)}</span>
                   </li>
                 ))}
               </ul>
@@ -235,14 +245,10 @@ export default function Expenses() {
       {/* 分类筛选 */}
       {expenses.length > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          <span className="text-xs text-gray-400">分类</span>
+          <span className="text-xs text-fg-3">分类</span>
           <button
             type="button"
-            className={`rounded px-2 py-0.5 text-xs ${
-              categoryFilter === ALL
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            className={categoryFilter === ALL ? 'chip-active' : 'chip'}
             onClick={() => setCategoryFilter(ALL)}
           >
             全部
@@ -251,11 +257,7 @@ export default function Expenses() {
             <button
               key={c.value}
               type="button"
-              className={`rounded px-2 py-0.5 text-xs ${
-                categoryFilter === c.value
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+              className={categoryFilter === c.value ? 'chip-active' : 'chip'}
               onClick={() => setCategoryFilter(c.value)}
             >
               {c.label}

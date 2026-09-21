@@ -4,19 +4,16 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Modal } from '@/components/common/Modal'
 import { Field, TextInput, Select, TextArea } from '@/components/forms/Field'
 import { db } from '@/db/schema'
+import { MARK_META } from './markMeta'
 import type { MapMark, MapMarkType, NewMapMark } from '@/types'
 
 export const MARK_TYPE_OPTIONS: {
   value: MapMarkType
   label: string
-  icon: string
-}[] = [
-  { value: 'sight', label: '景点', icon: '🏛️' },
-  { value: 'hotel', label: '酒店', icon: '🏨' },
-  { value: 'food', label: '美食', icon: '🍜' },
-  { value: 'station', label: '车站', icon: '🚉' },
-  { value: 'custom', label: '自定义', icon: '📍' },
-]
+}[] = (Object.keys(MARK_META) as MapMarkType[]).map((value) => ({
+  value,
+  label: MARK_META[value].label,
+}))
 
 interface MarkFormModalProps {
   open: boolean
@@ -136,7 +133,7 @@ export function MarkFormModal({
           <Select {...register('type')}>
             {MARK_TYPE_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
-                {o.icon} {o.label}
+                {o.label}
               </option>
             ))}
           </Select>
@@ -171,7 +168,7 @@ export function MarkFormModal({
           </Select>
         </Field>
         {formState.errors.name && (
-          <p className="text-xs text-red-500">请填写名称</p>
+          <p className="text-xs text-danger">请填写名称</p>
         )}
       </form>
     </Modal>

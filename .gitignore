@@ -11,6 +11,14 @@ node_modules
 dist
 dist-ssr
 
+# TS incremental build info & emitted config artifacts
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+
+# Agent / tool working directory
+.trae
+
 # Editor directories
 .vscode/*
 !.vscode/extensions.json

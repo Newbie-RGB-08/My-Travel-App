@@ -10,24 +10,9 @@ import { PageHeader } from '@/components/common/PageHeader'
 import { EmptyState } from '@/components/common/EmptyState'
 import { MapView } from './MapView'
 import { MarkFormModal } from './MarkFormModal'
+import { MARK_META } from './markMeta'
 import { TILE_SOURCES, type TileSourceKey } from './tiles'
-import type { MapMark, MapMarkType, NewMapMark, Route } from '@/types'
-
-const MARK_TYPE_ICON: Record<MapMarkType, string> = {
-  sight: '🏛️',
-  hotel: '🏨',
-  food: '🍜',
-  station: '🚉',
-  custom: '📍',
-}
-
-const MARK_TYPE_LABEL: Record<MapMarkType, string> = {
-  sight: '景点',
-  hotel: '酒店',
-  food: '美食',
-  station: '车站',
-  custom: '自定义',
-}
+import type { MapMark, NewMapMark, Route } from '@/types'
 
 interface MarkModalState {
   open: boolean
@@ -102,7 +87,7 @@ export default function MapViewPage() {
     setFocus({ lat: m.lat, lng: m.lng })
   }
 
-  // 路线选择：点击 +/✓ 把标注加入/移出选择序列
+  // 路线选择：点击 +/序号 把标注加入/移出选择序列
   const toggleRoutePick = (id: string) => {
     setRouteSelection((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
@@ -156,7 +141,7 @@ export default function MapViewPage() {
         <PageHeader
           title="地图详情"
           subtitle={
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-fg-2">
               {currentTripId
                 ? `本行程标注 ${marks.length} 个 · 路线 ${routes.length} 条`
                 : `未选行程，显示全部 ${marks.length} 个标注`}
@@ -183,7 +168,7 @@ export default function MapViewPage() {
                 className={
                   routeMode
                     ? 'btn-secondary'
-                    : 'btn-ghost border border-gray-200'
+                    : 'btn-ghost border border-line'
                 }
                 onClick={() => setRouteMode((v) => !v)}
                 aria-pressed={routeMode}
@@ -205,8 +190,8 @@ export default function MapViewPage() {
         <aside className="flex w-80 shrink-0 flex-col gap-4 overflow-y-auto">
           <section className="card flex flex-col p-3">
             <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-gray-900">标注</h2>
-              <span className="text-xs text-gray-400">{marks.length}</span>
+              <h2 className="text-sm font-semibold text-fg-1">标注</h2>
+              <span className="text-xs text-fg-3">{marks.length}</span>
             </div>
             {sortedMarks.length === 0 ? (
               <EmptyState
@@ -216,15 +201,16 @@ export default function MapViewPage() {
               />
             ) : (
               <ul className="space-y-1">
-                {sortedMarks.map((m, idx) => {
+                {sortedMarks.map((m) => {
                   const pickedIdx = routeSelection.indexOf(m.id)
                   const picked = pickedIdx >= 0
+                  const MIcon = MARK_META[m.type].icon
                   return (
                     <li
                       key={m.id}
                       data-mark-id={m.id}
                       data-mark-type={m.type}
-                      className="group flex items-center gap-2 rounded px-2 py-1.5 hover:bg-gray-50"
+                      className="group flex items-center gap-2 rounded px-2 py-1.5 hover:bg-white/6"
                     >
                       {routeMode && (
                         <button
@@ -232,7 +218,7 @@ export default function MapViewPage() {
                           className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] font-medium ${
                             picked
                               ? 'border-brand-500 bg-brand-500 text-white'
-                              : 'border-gray-300 text-gray-400'
+                              : 'border-line text-fg-3'
                           }`}
                           onClick={() => toggleRoutePick(m.id)}
                           aria-label={picked ? '移出路线' : '加入路线'}
@@ -245,15 +231,13 @@ export default function MapViewPage() {
                         className="flex min-w-0 flex-1 items-center gap-2 text-left"
                         onClick={() => handleSelectMark(m)}
                       >
-                        <span className="text-base" aria-hidden="true">
-                          {MARK_TYPE_ICON[m.type]}
-                        </span>
+                        <MIcon className="h-4 w-4 shrink-0 text-fg-2" />
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-medium text-gray-800">
+                          <span className="block truncate text-sm font-medium text-fg-1">
                             {m.name}
                           </span>
-                          <span className="block truncate text-[10px] text-gray-400">
-                            {MARK_TYPE_LABEL[m.type]} · {m.lat.toFixed(4)},{m.lng.toFixed(4)}
+                          <span className="block truncate text-[10px] text-fg-3">
+                            {MARK_META[m.type].label} · {m.lat.toFixed(4)},{m.lng.toFixed(4)}
                           </span>
                         </span>
                       </button>
@@ -268,7 +252,7 @@ export default function MapViewPage() {
                         </button>
                         <button
                           type="button"
-                          className="btn-ghost p-1 text-red-500 hover:bg-red-50"
+                          className="btn-ghost p-1 text-danger hover:bg-danger/10"
                           onClick={() => handleDeleteMark(m)}
                           aria-label="删除标注"
                         >
@@ -286,18 +270,21 @@ export default function MapViewPage() {
           {routeMode && (
             <section className="card flex flex-col gap-2 p-3" data-route-builder>
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-gray-900">路线选择</h2>
-                <span className="text-xs text-gray-400">
+                <h2 className="text-sm font-semibold text-fg-1">路线选择</h2>
+                <span className="text-xs text-fg-3">
                   已选 {routeSelection.length} 点
                 </span>
               </div>
               {selectedMarks.length > 0 ? (
-                <ol className="space-y-1 text-xs text-gray-600">
-                  {selectedMarks.map((m, i) => (
+                <ol className="space-y-1 text-xs text-fg-2">
+                  {selectedMarks.map((m, i) => {
+                    const MIcon = MARK_META[m.type].icon
+                    return (
                     <li key={m.id} className="flex items-center gap-1">
                       <span className="text-brand-500">{i + 1}.</span>
+                      <MIcon className="h-3.5 w-3.5 shrink-0 text-fg-3" />
                       <span className="truncate">
-                        {MARK_TYPE_ICON[m.type]} {m.name}
+                        {m.name}
                       </span>
                       <button
                         type="button"
@@ -308,10 +295,11 @@ export default function MapViewPage() {
                         <X className="h-3 w-3" />
                       </button>
                     </li>
-                  ))}
+                    )
+                  })}
                 </ol>
               ) : (
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-fg-3">
                   点击左侧标注前的 + 号，按顺序加入路线（至少 2 个点）。
                 </p>
               )}
@@ -346,28 +334,28 @@ export default function MapViewPage() {
           {routes.length > 0 && (
             <section className="card flex flex-col p-3">
               <div className="mb-2 flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-gray-900">路线</h2>
-                <span className="text-xs text-gray-400">{routes.length}</span>
+                <h2 className="text-sm font-semibold text-fg-1">路线</h2>
+                <span className="text-xs text-fg-3">{routes.length}</span>
               </div>
               <ul className="space-y-1">
                 {routes.map((r) => (
                   <li
                     key={r.id}
                     data-route-id={r.id}
-                    className="flex items-center gap-2 rounded px-2 py-1.5 hover:bg-gray-50"
+                    className="flex items-center gap-2 rounded px-2 py-1.5 hover:bg-white/6"
                   >
                     <RouteIcon className="h-3.5 w-3.5 shrink-0 text-brand-500" />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm text-gray-800">
+                      <span className="block truncate text-sm text-fg-1">
                         {r.name}
                       </span>
-                      <span className="block text-[10px] text-gray-400">
+                      <span className="block text-[10px] text-fg-3">
                         {r.markIds.length} 点
                       </span>
                     </span>
                     <button
                       type="button"
-                      className="btn-ghost p-1 text-red-500 hover:bg-red-50"
+                      className="btn-ghost p-1 text-danger hover:bg-danger/10"
                       onClick={() => handleDeleteRoute(r)}
                       aria-label="删除路线"
                     >
@@ -384,9 +372,9 @@ export default function MapViewPage() {
         <div className="card relative min-w-0 flex-1 overflow-hidden">
           {offline ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
-              <MapPin className="mb-2 h-10 w-10 text-gray-300" />
-              <p className="text-sm font-medium text-gray-700">地图需联网</p>
-              <p className="mt-1 text-xs text-gray-400">
+              <MapPin className="mb-2 h-10 w-10 text-white/25" />
+              <p className="text-sm font-medium text-fg-1">地图需联网</p>
+              <p className="mt-1 text-xs text-fg-3">
                 瓦片加载失败，左侧标注与路线列表仍可查看。
               </p>
               <button

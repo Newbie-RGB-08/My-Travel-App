@@ -1,16 +1,28 @@
-import { Pencil, Trash2, Star, ImageIcon } from 'lucide-react'
+import {
+  Pencil,
+  Trash2,
+  Star,
+  ImageIcon,
+  Landmark,
+  UtensilsCrossed,
+  ShoppingBag,
+  Drama,
+  AlertTriangle,
+  Backpack,
+  type LucideIcon,
+} from 'lucide-react'
 import type { Guide, GuideCategory } from '@/types'
 
 export const CATEGORY_META: Record<
   GuideCategory,
-  { label: string; icon: string; color: string }
+  { label: string; icon: LucideIcon; hex: string }
 > = {
-  sight: { label: '景点', icon: '🏛️', color: 'bg-blue-100 text-blue-700' },
-  food: { label: '美食', icon: '🍜', color: 'bg-amber-100 text-amber-700' },
-  shop: { label: '购物', icon: '🛍️', color: 'bg-pink-100 text-pink-700' },
-  culture: { label: '文化', icon: '🎎', color: 'bg-purple-100 text-purple-700' },
-  pitfall: { label: '避坑', icon: '⚠️', color: 'bg-red-100 text-red-700' },
-  gear: { label: '装备', icon: '🎒', color: 'bg-green-100 text-green-700' },
+  sight: { label: '景点', icon: Landmark, hex: '#0A84FF' },
+  food: { label: '美食', icon: UtensilsCrossed, hex: '#FF9F0A' },
+  shop: { label: '购物', icon: ShoppingBag, hex: '#FF375F' },
+  culture: { label: '文化', icon: Drama, hex: '#BF5AF2' },
+  pitfall: { label: '避坑', icon: AlertTriangle, hex: '#FF453A' },
+  gear: { label: '装备', icon: Backpack, hex: '#30D158' },
 }
 
 interface GuideCardProps {
@@ -29,6 +41,7 @@ export function GuideCard({
   highlight,
 }: GuideCardProps) {
   const c = CATEGORY_META[guide.category]
+  const CIcon = c.icon
   return (
     <div
       className={`card card-hover flex flex-col p-4 ${highlight ? 'ring-2 ring-brand-500' : ''}`}
@@ -39,19 +52,18 @@ export function GuideCard({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-base" aria-hidden="true">
-              {c.icon}
-            </span>
+            <CIcon className="h-4 w-4 shrink-0" style={{ color: c.hex }} />
             <span
-              className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${c.color}`}
+              className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+              style={{ backgroundColor: `${c.hex}26`, color: c.hex }}
             >
               {c.label}
             </span>
             {guide.destination && (
-              <span className="text-xs text-gray-400">{guide.destination}</span>
+              <span className="text-xs text-fg-3">{guide.destination}</span>
             )}
           </div>
-          <h3 className="mt-1 text-sm font-semibold text-gray-900">
+          <h3 className="mt-1 text-sm font-semibold text-fg-1">
             {guide.title}
           </h3>
         </div>
@@ -60,7 +72,7 @@ export function GuideCard({
             <button
               type="button"
               className={`btn-ghost p-1 ${
-                guide.favorite ? 'text-amber-500' : 'text-gray-300'
+                guide.favorite ? 'text-warn' : 'text-white/25'
               }`}
               onClick={onToggleFavorite}
               aria-label={guide.favorite ? '取消收藏' : '收藏攻略'}
@@ -85,7 +97,7 @@ export function GuideCard({
           {onDelete && (
             <button
               type="button"
-              className="btn-ghost p-1 text-red-500 hover:bg-red-50"
+              className="btn-ghost p-1 text-danger hover:bg-danger/10"
               onClick={onDelete}
               aria-label="删除攻略"
             >
@@ -95,11 +107,11 @@ export function GuideCard({
         </div>
       </div>
       {guide.content && (
-        <p className="mt-2 flex-1 text-xs text-gray-600 line-clamp-3">
+        <p className="mt-2 flex-1 text-xs text-fg-2 line-clamp-3">
           {guide.content}
         </p>
       )}
-      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-2 text-xs text-gray-400">
+      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-line-soft pt-2 text-xs text-fg-3">
         {guide.attachmentIds.length > 0 && (
           <span className="inline-flex items-center gap-0.5">
             <ImageIcon className="h-3 w-3" />
@@ -109,7 +121,7 @@ export function GuideCard({
         {guide.tags.map((tag) => (
           <span
             key={tag}
-            className="rounded bg-gray-100 px-1.5 py-0.5 text-gray-500"
+            className="glass-thin rounded px-1.5 py-0.5 text-fg-2"
           >
             #{tag}
           </span>

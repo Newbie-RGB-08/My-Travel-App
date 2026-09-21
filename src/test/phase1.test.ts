@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import 'fake-indexeddb/auto'
 
-import { db, resetDB } from '@/db/schema'
+import { resetDB } from '@/db/schema'
 import * as crud from '@/db/crud'
 
 beforeEach(async () => {
@@ -74,8 +74,8 @@ describe('阶段 1：数据层 CRUD', () => {
         status: 'planning',
       })
       const list = await crud.listTrips()
-      expect(list[0].name).toBe('晚行程')
-      expect(list[1].name).toBe('早行程')
+      expect(list[0]!.name).toBe('晚行程')
+      expect(list[1]!.name).toBe('早行程')
     })
   })
 
@@ -127,8 +127,8 @@ describe('阶段 1：数据层 CRUD', () => {
       const a2 = await crud.listActivities(t2.id)
       expect(a1).toHaveLength(1)
       expect(a2).toHaveLength(1)
-      expect(a1[0].place).toBe('故宫')
-      expect(a2[0].place).toBe('西湖')
+      expect(a1[0]!.place).toBe('故宫')
+      expect(a2[0]!.place).toBe('西湖')
     })
 
     it('listActivitiesByDate 同行程同日筛选', async () => {
@@ -167,7 +167,7 @@ describe('阶段 1：数据层 CRUD', () => {
       })
       const items = await crud.listActivitiesByDate(t.id, '2026-01-02')
       expect(items).toHaveLength(1)
-      expect(items[0].place).toBe('A2')
+      expect(items[0]!.place).toBe('A2')
     })
 
     it('默认关联数组字段为空', async () => {
@@ -218,8 +218,8 @@ describe('阶段 1：数据层 CRUD', () => {
         status: 'pending',
       })
       const list = await crud.listTransportsSorted()
-      expect(list[0].no).toBe('G1')
-      expect(list[1].no).toBe('CA1837')
+      expect(list[0]!.no).toBe('G1')
+      expect(list[1]!.no).toBe('CA1837')
     })
   })
 
@@ -246,8 +246,8 @@ describe('阶段 1：数据层 CRUD', () => {
         note: '',
       })
       const list = await crud.listExpensesSorted()
-      expect(list[0].amount).toBe(200)
-      expect(list[1].amount).toBe(100)
+      expect(list[0]!.amount).toBe(200)
+      expect(list[1]!.amount).toBe(100)
     })
 
     it('按活动筛选消费', async () => {
@@ -263,7 +263,7 @@ describe('阶段 1：数据层 CRUD', () => {
       })
       const list = await crud.listExpensesByActivity('act-1')
       expect(list).toHaveLength(1)
-      expect(list[0].id).toBe(e.id)
+      expect(list[0]!.id).toBe(e.id)
     })
   })
 
@@ -291,7 +291,7 @@ describe('阶段 1：数据层 CRUD', () => {
       })
       const fav = await crud.listFavoriteGuides(5)
       expect(fav).toHaveLength(1)
-      expect(fav[0].id).toBe(g2.id)
+      expect(fav[0]!.id).toBe(g2.id)
     })
 
     it('收藏列表限制条数', async () => {
@@ -348,7 +348,7 @@ describe('阶段 1：数据层 CRUD', () => {
       const routes = await crud.listRoutes(t.id)
       expect(marks).toHaveLength(2)
       expect(routes).toHaveLength(1)
-      expect(routes[0].id).toBe(r.id)
+      expect(routes[0]!.id).toBe(r.id)
     })
 
     it('删除 MapMark 自动从 Route 引用中移除', async () => {

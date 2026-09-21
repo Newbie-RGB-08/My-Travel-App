@@ -82,11 +82,11 @@ export default function Transports() {
         title="交通安排"
         subtitle={
           currentTripId ? (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-fg-2">
               共 {sorted.length} 条 · 待出行 {pendingCount} 条
             </span>
           ) : (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-fg-2">
               未选行程，显示全部 {sorted.length} 条 · 待出行 {pendingCount} 条
             </span>
           )

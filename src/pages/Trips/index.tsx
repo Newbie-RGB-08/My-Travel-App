@@ -222,7 +222,7 @@ function TripDetail({
       <PageHeader
         title={trip.name}
         subtitle={
-          <span className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+          <span className="flex flex-wrap items-center gap-3 text-xs text-fg-2">
             <StatusBadge status={trip.status} />
             <span>{trip.destination}</span>
             <span>
@@ -332,9 +332,9 @@ function DaySection({
   return (
     <section className="card p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-900">
+        <h2 className="text-sm font-semibold text-fg-1">
           {date || '未填日期'}
-          <span className="ml-2 text-xs text-gray-400">
+          <span className="ml-2 text-xs text-fg-3">
             {activities.length} 个活动
           </span>
         </h2>
@@ -351,47 +351,47 @@ function DaySection({
         {SLOTS.map((slot) => {
           const items = activities.filter((a) => a.slot === slot.value)
           return (
-            <div key={slot.value} className="rounded-md bg-gray-50 p-3">
-              <div className="mb-2 text-xs font-medium text-gray-500">
+            <div key={slot.value} className="rounded-control glass-inset p-3">
+              <div className="mb-2 text-xs font-medium text-fg-2">
                 {slot.label}
               </div>
               {items.length === 0 ? (
-                <div className="text-xs text-gray-400">（无活动）</div>
+                <div className="text-xs text-fg-3">（无活动）</div>
               ) : (
                 <ul className="space-y-2">
                   {items.map((a) => (
                     <li
                       key={a.id}
-                      className="cursor-pointer rounded border border-gray-200 bg-white p-2 hover:border-brand-300"
+                      className="cursor-pointer rounded border border-line bg-white/5 p-2 hover:border-brand-500/50"
                       onClick={() => onEdit(a)}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-fg-1">
                           {a.place || '（未填地点）'}
                         </div>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-fg-3">
                           {TYPE_LABELS[a.type]}
                         </div>
                       </div>
                       {a.time && (
-                        <div className="mt-1 flex items-center gap-1 text-xs text-gray-500">
+                        <div className="mt-1 flex items-center gap-1 text-xs text-fg-2">
                           <Clock className="h-3 w-3" />
                           {a.time}
                         </div>
                       )}
                       {a.note && (
-                        <p className="mt-1 text-xs text-gray-500 line-clamp-2">
+                        <p className="mt-1 text-xs text-fg-2 line-clamp-2">
                           {a.note}
                         </p>
                       )}
                       {/* 跨模块关联：点击图标跳转到对应模块并高亮 */}
-                      <div className="mt-2 flex flex-wrap items-center gap-1 text-xs text-gray-400">
+                      <div className="mt-2 flex flex-wrap items-center gap-1 text-xs text-fg-3">
                         {a.linkedTransportIds.map((tid) => (
                           <Link
                             key={tid}
                             to={`/transports?highlight=${tid}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center rounded bg-gray-100 px-1 py-0.5 hover:bg-brand-50 hover:text-brand-600"
+                            className="inline-flex items-center rounded bg-white/8 px-1 py-0.5 text-fg-2 hover:bg-brand-500/20 hover:text-brand-300"
                             aria-label="跳转交通"
                             data-link-transport={tid}
                           >
@@ -403,7 +403,7 @@ function DaySection({
                             key={eid}
                             to={`/expenses?highlight=${eid}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center rounded bg-gray-100 px-1 py-0.5 hover:bg-brand-50 hover:text-brand-600"
+                            className="inline-flex items-center rounded bg-white/8 px-1 py-0.5 text-fg-2 hover:bg-brand-500/20 hover:text-brand-300"
                             aria-label="跳转消费"
                             data-link-expense={eid}
                           >
@@ -415,7 +415,7 @@ function DaySection({
                             key={gid}
                             to={`/guides?highlight=${gid}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center rounded bg-gray-100 px-1 py-0.5 hover:bg-brand-50 hover:text-brand-600"
+                            className="inline-flex items-center rounded bg-white/8 px-1 py-0.5 text-fg-2 hover:bg-brand-500/20 hover:text-brand-300"
                             aria-label="跳转攻略"
                             data-link-guide={gid}
                           >
@@ -425,13 +425,13 @@ function DaySection({
                         {a.linkedTransportIds.length === 0 &&
                           a.linkedExpenseIds.length === 0 &&
                           a.linkedGuideIds.length === 0 && (
-                            <span className="text-[10px] text-gray-300">
+                            <span className="text-[10px] text-white/25">
                               无关联
                             </span>
                           )}
                         <button
                           type="button"
-                          className="ml-auto text-red-500 hover:text-red-700"
+                          className="ml-auto text-danger hover:text-danger/80"
                           onClick={(e) => {
                             e.stopPropagation()
                             openConfirm({

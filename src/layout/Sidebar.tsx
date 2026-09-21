@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { Compass, Home, Map, Notebook, Plane, Wallet } from 'lucide-react'
+import { Compass, Home, Map, Notebook, Plane, Wallet, Settings } from 'lucide-react'
 
 import { TripSwitcher } from './TripSwitcher'
 
@@ -14,10 +14,10 @@ const navItems = [
 
 export function Sidebar() {
   return (
-    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-gray-200 bg-white">
+    <aside className="glass-thick relative z-10 flex h-full w-60 shrink-0 flex-col rounded-none border-y-0 border-l-0">
       <div className="flex items-center gap-2 px-5 py-4">
-        <Compass className="h-6 w-6 text-brand-600" />
-        <span className="text-base font-semibold text-gray-900">我的旅行</span>
+        <Compass className="h-6 w-6 shrink-0 text-brand-600" />
+        <span className="text-base font-semibold text-fg-1">我的旅行</span>
       </div>
 
       <nav className="flex-1 space-y-0.5 px-3">
@@ -29,34 +29,35 @@ export function Sidebar() {
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors ${
+                `flex items-center gap-3 rounded-md border border-transparent px-3 py-2 text-sm transition-all duration-200 ease-liquid ${
                   isActive
-                    ? 'bg-brand-50 text-brand-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    ? 'glass-active text-fg-1'
+                    : 'text-fg-2 hover:bg-white/8 hover:text-fg-1'
                 }`
               }
             >
-              <Icon className="h-4 w-4" />
+              <Icon className="h-4 w-4 shrink-0" />
               {item.label}
             </NavLink>
           )
         })}
       </nav>
 
-      <div className="border-t border-gray-100 p-3">
+      <div className="border-t border-line-soft p-3">
         <TripSwitcher />
       </div>
-      <div className="border-t border-gray-100 px-3 py-2">
+      <div className="border-t border-line-soft px-3 py-2">
         <NavLink
           to="/settings"
           className={({ isActive }) =>
-            `flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${
+            `flex items-center gap-3 rounded-md border border-transparent px-3 py-2 text-sm transition-all duration-200 ease-liquid ${
               isActive
-                ? 'bg-brand-50 text-brand-700'
-                : 'text-gray-500 hover:bg-gray-50'
+                ? 'glass-active text-fg-1'
+                : 'text-fg-2 hover:bg-white/8 hover:text-fg-1'
             }`
           }
         >
+          <Settings className="h-4 w-4 shrink-0" />
           设置
         </NavLink>
       </div>

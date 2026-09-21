@@ -9,7 +9,7 @@ import { useTripStore } from '@/store/useTripStore'
 import { useModalStore } from '@/store/useModalStore'
 import { PageHeader } from '@/components/common/PageHeader'
 import { EmptyState } from '@/components/common/EmptyState'
-import { GuideCard } from './GuideCard'
+import { GuideCard, CATEGORY_META } from './GuideCard'
 import { GuideFormModal } from './GuideFormModal'
 import { CATEGORY_OPTIONS } from './GuideFormModal'
 import type { Guide, GuideCategory, NewGuide } from '@/types'
@@ -89,7 +89,7 @@ export default function Guides() {
       <PageHeader
         title="游玩攻略"
         subtitle={
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-fg-2">
             {currentTripId
               ? `本行程攻略 ${guides.length} 条`
               : `未选行程，显示全部 ${guides.length} 条`}
@@ -108,36 +108,34 @@ export default function Guides() {
       {guides.length > 0 && (
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <div className="flex flex-wrap items-center gap-1">
-            <span className="text-xs text-gray-400">分类</span>
+            <span className="text-xs text-fg-3">分类</span>
             <button
               type="button"
-              className={`rounded px-2 py-0.5 text-xs ${
-                categoryFilter === ALL
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+              className={`chip ${categoryFilter === ALL ? 'chip-active' : ''}`}
               onClick={() => setCategoryFilter(ALL)}
             >
               全部
             </button>
-            {CATEGORY_OPTIONS.map((c) => (
-              <button
-                key={c.value}
-                type="button"
-                className={`rounded px-2 py-0.5 text-xs ${
-                  categoryFilter === c.value
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-                onClick={() => setCategoryFilter(c.value)}
-              >
-                {c.icon} {c.label}
-              </button>
-            ))}
+            {CATEGORY_OPTIONS.map((c) => {
+              const CIcon = CATEGORY_META[c.value].icon
+              return (
+                <button
+                  key={c.value}
+                  type="button"
+                  className={`chip ${
+                    categoryFilter === c.value ? 'chip-active' : ''
+                  }`}
+                  onClick={() => setCategoryFilter(c.value)}
+                >
+                  <CIcon className="h-3 w-3" />
+                  {c.label}
+                </button>
+              )
+            })}
           </div>
           {destinations.length > 0 && (
             <div className="flex items-center gap-1">
-              <span className="text-xs text-gray-400">目的地</span>
+              <span className="text-xs text-fg-3">目的地</span>
               <select
                 className="input max-w-[160px] py-0.5 text-xs"
                 value={destFilter}

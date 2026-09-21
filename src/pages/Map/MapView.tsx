@@ -7,22 +7,21 @@ import {
   Polyline,
   useMap,
 } from 'react-leaflet'
+import { renderToStaticMarkup } from 'react-dom/server'
 import L from 'leaflet'
 import { TILE_SOURCES, type TileSourceKey } from './tiles'
+import { MARK_META } from './markMeta'
 import type { MapMark, MapMarkType, Route } from '@/types'
 
-const MARK_ICON: Record<MapMarkType, string> = {
-  sight: '🏛️',
-  hotel: '🏨',
-  food: '🍜',
-  station: '🚉',
-  custom: '📍',
-}
-
 function makeIcon(type: MapMarkType): L.DivIcon {
+  const meta = MARK_META[type]
+  const Icon = meta.icon
+  const svg = renderToStaticMarkup(
+    <Icon width={14} height={14} strokeWidth={2.4} />,
+  )
   return L.divIcon({
     className: 'map-mark-icon',
-    html: `<div style="font-size:24px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))">${MARK_ICON[type]}</div>`,
+    html: `<span class="map-pin" style="--pin:${meta.hex}">${svg}</span>`,
     iconSize: [28, 28],
     iconAnchor: [14, 14],
   })
@@ -61,7 +60,7 @@ export function MapView({
   const tile = TILE_SOURCES[tileKey]
   const icons = useMemo(() => {
     const m = {} as Record<MapMarkType, L.DivIcon>
-    ;(Object.keys(MARK_ICON) as MapMarkType[]).forEach((t) => {
+    ;(Object.keys(MARK_META) as MapMarkType[]).forEach((t) => {
       m[t] = makeIcon(t)
     })
     return m
@@ -82,17 +81,23 @@ export function MapView({
     }))
   }, [routes, marks])
 
+  // react-leaflet v4 的 MapContainer 类型未声明 eventHandlers；
+  // 此处保持既有运行时传参不变，仅做类型层消解
+  const containerEventProps = {
+    eventHandlers: {
+      click: (e: L.LeafletMouseEvent) => {
+        onMapClick(e.latlng.lat, e.latlng.lng)
+      },
+    },
+  } as unknown as Record<string, unknown>
+
   return (
     <MapContainer
       center={[39.9042, 116.4074]}
       zoom={11}
       className="h-full w-full"
       style={{ height: '100%', width: '100%' }}
-      eventHandlers={{
-        click: (e: L.LeafletMouseEvent) => {
-          onMapClick(e.latlng.lat, e.latlng.lng)
-        },
-      }}
+      {...containerEventProps}
     >
       <TileLayer
         url={tile.url}
@@ -122,7 +127,7 @@ export function MapView({
           <Polyline
             key={rl.id}
             positions={rl.coords}
-            pathOptions={{ color: '#2563eb', weight: 3, opacity: 0.7 }}
+            pathOptions={{ color: '#0A84FF', weight: 3, opacity: 0.7 }}
           />
         ) : null,
       )}

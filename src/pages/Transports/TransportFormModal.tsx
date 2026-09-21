@@ -35,12 +35,12 @@ interface FormValues {
 }
 
 const TYPE_OPTIONS: { value: TransportType; label: string }[] = [
-  { value: 'flight', label: '航班 ✈️' },
-  { value: 'train', label: '火车 🚄' },
-  { value: 'bus', label: '大巴 🚌' },
-  { value: 'metro', label: '地铁 🚇' },
-  { value: 'taxi', label: '出租 🚕' },
-  { value: 'self', label: '自驾 🚗' },
+  { value: 'flight', label: '航班' },
+  { value: 'train', label: '火车' },
+  { value: 'bus', label: '大巴' },
+  { value: 'metro', label: '地铁' },
+  { value: 'taxi', label: '出租' },
+  { value: 'self', label: '自驾' },
 ]
 
 const STATUS_OPTIONS: { value: TransportStatus; label: string }[] = [

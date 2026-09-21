@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import 'fake-indexeddb/auto'
@@ -77,7 +77,7 @@ describe('阶段 3：行程计划模块', () => {
       renderPage()
       await screen.findByText('原行程', {}, FIND_OPTS)
       await user.click(screen.getByLabelText('编辑行程'))
-      const name = await screen.findByDisplayValue('原行程', FIND_OPTS)
+      const name = await screen.findByDisplayValue('原行程', {}, FIND_OPTS)
       await user.clear(name)
       await user.type(name, '改后行程')
       await user.click(screen.getByRole('button', { name: '保存' }))
@@ -125,7 +125,7 @@ describe('阶段 3：行程计划模块', () => {
       // 子数据保留但 tripId 解除
       const acts = await crud.listActivities()
       expect(acts).toHaveLength(1)
-      expect(acts[0].tripId).toBeNull()
+      expect(acts[0]!.tripId).toBeNull()
     })
   })
 
@@ -208,7 +208,7 @@ describe('阶段 3：行程计划模块', () => {
       await screen.findByText('故宫', {}, FIND_OPTS)
       const li = screen.getByText('故宫').closest('li')!
       await user.click(li)
-      await screen.findByDisplayValue('故宫', FIND_OPTS)
+      await screen.findByDisplayValue('故宫', {}, FIND_OPTS)
       const nameInput = screen.getByDisplayValue('故宫') as HTMLInputElement
       await user.clear(nameInput)
       await user.type(nameInput, '颐和园')

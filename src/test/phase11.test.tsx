@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import 'fake-indexeddb/auto'
@@ -155,7 +155,7 @@ describe('阶段 11：验收测试（PRD 第十节 22 条）', () => {
       })
       const all = await db.trips.toArray()
       expect(all).toHaveLength(1)
-      expect(all[0].name).toBe('持久化测试行程')
+      expect(all[0]!.name).toBe('持久化测试行程')
     })
 
     it('4. 数据由 IndexedDB 持久化到磁盘（重启后仍可读取）', async () => {
@@ -375,12 +375,12 @@ describe('阶段 11：验收测试（PRD 第十节 22 条）', () => {
       const user = userEvent.setup()
       await user.click(screen.getByRole('button', { name: /画路线/ }))
       const pickBtns = screen.getAllByRole('button', { name: /加入路线|移出路线/ })
-      await user.click(pickBtns[0])
-      await user.click(pickBtns[1])
+      await user.click(pickBtns[0]!)
+      await user.click(pickBtns[1]!)
       await user.click(screen.getByRole('button', { name: '生成路线' }))
       const routes = await crud.listRoutes(t.id)
       expect(routes).toHaveLength(1)
-      expect(routes[0].markIds).toHaveLength(2)
+      expect(routes[0]!.markIds).toHaveLength(2)
     })
 
     it('14. 游玩攻略：新建条目，收藏后首页可见', async () => {
@@ -410,7 +410,7 @@ describe('阶段 11：验收测试（PRD 第十节 22 条）', () => {
   })
 
   describe('10.6 跨模块关联', () => {
-    it('16. 活动卡片点 🚄 跳转交通', async () => {
+    it('16. 活动卡片点交通图标跳转交通', async () => {
       const { t, tr } = await makeFullTrip()
       await crud.addActivity({
         tripId: t.id,
@@ -433,7 +433,7 @@ describe('阶段 11：验收测试（PRD 第十节 22 条）', () => {
       )
     })
 
-    it('17. 活动卡片点 💰 跳转消费', async () => {
+    it('17. 活动卡片点消费图标跳转消费', async () => {
       const { t, ex } = await makeFullTrip()
       await crud.addActivity({
         tripId: t.id,
@@ -456,7 +456,7 @@ describe('阶段 11：验收测试（PRD 第十节 22 条）', () => {
       )
     })
 
-    it('18. 活动卡片点 📖 跳转攻略', async () => {
+    it('18. 活动卡片点攻略图标跳转攻略', async () => {
       const { t, gu } = await makeFullTrip()
       await crud.addActivity({
         tripId: t.id,
@@ -481,16 +481,17 @@ describe('阶段 11：验收测试（PRD 第十节 22 条）', () => {
   })
 
   describe('10.7 视觉和体验', () => {
-    it('19. 整体白底、大量留白、Notion/Linear 风格', () => {
+    it('19. 整体深色玻璃质感、环境光晕层次', () => {
       render(
         <MemoryRouter>
           <AppLayout />
         </MemoryRouter>,
       )
       const aside = screen.getByText('我的旅行').closest('aside')!
-      expect(aside.className).toContain('bg-white')
+      expect(aside.className).toContain('glass-thick')
       const main = aside.parentElement?.querySelector('main')
-      expect(main?.className).toContain('bg-gray-50')
+      expect(main?.className).not.toContain('bg-gray-50')
+      expect(main?.className).toContain('relative')
     })
 
     it('20. 每个模块在无数据时显示"创建第一条"引导按钮', async () => {
@@ -514,9 +515,15 @@ describe('阶段 11：验收测试（PRD 第十节 22 条）', () => {
     it('21. 除地图模块外，其他 5 个模块功能完全正常（纯本地）', async () => {
       const { t } = await makeFullTrip()
       useTripStore.setState({ currentTripId: t.id })
-      // 行程计划（列表或详情视图均可渲染）
+      // 行程计划（列表或详情视图均可渲染：已选行程时进入详情视图，标题为行程名）
       const r1 = renderWith(<Trips />)
-      expect(await screen.findByText('行程计划', {}, FIND_OPTS)).toBeInTheDocument()
+      await waitFor(
+        () => {
+          const h1 = r1.container.querySelector('h1')
+          expect(h1?.textContent ?? '').toMatch(/^行程计划$|^十一北京$/)
+        },
+        FIND_OPTS,
+      )
       r1.unmount()
       // 交通安排
       const r2 = renderWith(<Transports />)

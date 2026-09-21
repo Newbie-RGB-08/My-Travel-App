@@ -1,17 +1,27 @@
-import { Pencil, Trash2 } from 'lucide-react'
+import {
+  Pencil,
+  Trash2,
+  TrainFront,
+  BedDouble,
+  UtensilsCrossed,
+  Ticket,
+  ShoppingBag,
+  Receipt,
+  type LucideIcon,
+} from 'lucide-react'
 import type { Expense, ExpenseCategory } from '@/types'
 import { formatDateTime, formatMoney } from '@/utils/format'
 
 export const CATEGORY_META: Record<
   ExpenseCategory,
-  { label: string; color: string; icon: string }
+  { label: string; color: string; icon: LucideIcon }
 > = {
-  transport: { label: '交通', color: '#3b82f6', icon: '🚆' },
-  stay: { label: '住宿', color: '#8b5cf6', icon: '🏨' },
-  food: { label: '餐饮', color: '#f59e0b', icon: '🍜' },
-  ticket: { label: '门票', color: '#10b981', icon: '🎟️' },
-  shop: { label: '购物', color: '#ec4899', icon: '🛍️' },
-  other: { label: '其他', color: '#6b7280', icon: '💸' },
+  transport: { label: '交通', color: '#0A84FF', icon: TrainFront },
+  stay: { label: '住宿', color: '#BF5AF2', icon: BedDouble },
+  food: { label: '餐饮', color: '#FF9F0A', icon: UtensilsCrossed },
+  ticket: { label: '门票', color: '#30D158', icon: Ticket },
+  shop: { label: '购物', color: '#FF375F', icon: ShoppingBag },
+  other: { label: '其他', color: '#98989F', icon: Receipt },
 }
 
 interface ExpenseCardProps {
@@ -28,6 +38,7 @@ export function ExpenseCard({
   highlight,
 }: ExpenseCardProps) {
   const c = CATEGORY_META[expense.category]
+  const CIcon = c.icon
   return (
     <div
       className={`card card-hover p-4 ${highlight ? 'ring-2 ring-brand-500' : ''}`}
@@ -37,27 +48,25 @@ export function ExpenseCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-base" aria-hidden="true">
-              {c.icon}
-            </span>
+            <CIcon className="h-4 w-4 shrink-0" style={{ color: c.color }} />
             <span
               className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-              style={{ backgroundColor: `${c.color}22`, color: c.color }}
+              style={{ backgroundColor: `${c.color}26`, color: c.color }}
             >
               {c.label}
             </span>
-            <span className="text-sm font-semibold text-gray-900">
+            <span className="text-sm font-semibold text-fg-1">
               {formatMoney(expense.amount, expense.currency)}
             </span>
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+          <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-fg-2">
             <span>
               <time>{formatDateTime(expense.time)}</time>
             </span>
             {expense.place && <span>{expense.place}</span>}
           </div>
           {expense.note && (
-            <p className="mt-1 text-xs text-gray-500 line-clamp-2">
+            <p className="mt-1 text-xs text-fg-2 line-clamp-2">
               {expense.note}
             </p>
           )}
@@ -76,7 +85,7 @@ export function ExpenseCard({
           {onDelete && (
             <button
               type="button"
-              className="btn-ghost p-1 text-red-500 hover:bg-red-50"
+              className="btn-ghost p-1 text-danger hover:bg-danger/10"
               onClick={onDelete}
               aria-label="删除消费记录"
             >

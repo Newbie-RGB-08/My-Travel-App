@@ -1,18 +1,16 @@
 import type { Trip, TripStatus } from '@/types'
 import { formatDateRange, formatMoney } from '@/utils/format'
 
-const STATUS_BADGE: Record<TripStatus, { label: string; cls: string }> = {
-  planning: { label: '计划中', cls: 'bg-gray-100 text-gray-600' },
-  ongoing: { label: '进行中', cls: 'bg-brand-100 text-brand-700' },
-  done: { label: '已完成', cls: 'bg-green-100 text-green-700' },
+const STATUS_BADGE: Record<TripStatus, { label: string; tone: 'neutral' | 'accent' | 'ok' }> = {
+  planning: { label: '计划中', tone: 'neutral' },
+  ongoing: { label: '进行中', tone: 'accent' },
+  done: { label: '已完成', tone: 'ok' },
 }
 
 export function StatusBadge({ status }: { status: TripStatus }) {
   const s = STATUS_BADGE[status]
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${s.cls}`}
-    >
+    <span className="badge" data-tone={s.tone}>
       {s.label}
     </span>
   )
@@ -43,15 +41,15 @@ export function TripCard({
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="truncate text-base font-semibold text-gray-900">
+            <h3 className="truncate text-base font-semibold text-fg-1">
               {trip.name}
             </h3>
             <StatusBadge status={trip.status} />
           </div>
-          <div className="mt-1 text-sm text-gray-500">
+          <div className="mt-1 text-sm text-fg-2">
             {trip.destination || '未填目的地'}
           </div>
-          <div className="mt-1 text-xs text-gray-400">
+          <div className="mt-1 text-xs text-fg-3">
             {formatDateRange(trip.startDate, trip.endDate)}
           </div>
         </div>
@@ -74,7 +72,7 @@ export function TripCard({
           {onDelete && (
             <button
               type="button"
-              className="btn-ghost p-1 text-red-500 hover:bg-red-50"
+              className="btn-ghost p-1 text-danger hover:bg-danger/10"
               onClick={(e) => {
                 e.stopPropagation()
                 onDelete()
@@ -88,7 +86,7 @@ export function TripCard({
           )}
         </div>
       </div>
-      <div className="mt-3 border-t border-gray-100 pt-3 text-xs text-gray-500">
+      <div className="mt-3 border-t border-line-soft pt-3 text-xs text-fg-2">
         预算 {formatMoney(trip.budget, 'CNY')}
         {trip.companions.length > 0 && (
           <span className="ml-3">同行 · {trip.companions.join('、')}</span>

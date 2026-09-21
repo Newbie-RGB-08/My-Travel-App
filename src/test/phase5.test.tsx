@@ -103,7 +103,7 @@ describe('阶段 5：消费记录模块', () => {
       await screen.findByText('A地点', {}, FIND_OPTS)
       expect(amountEls('¥50.00').length).toBeGreaterThan(0)
       await user.click(screen.getByLabelText('编辑消费记录'))
-      const amountInput = await screen.findByDisplayValue('50', FIND_OPTS)
+      const amountInput = await screen.findByDisplayValue('50', {}, FIND_OPTS)
       await user.clear(amountInput)
       await user.type(amountInput, '200')
       await user.click(screen.getByRole('button', { name: '保存' }))
@@ -288,7 +288,7 @@ describe('阶段 5：消费记录模块', () => {
       useTripStore.setState({ currentTripId: t.id })
       renderPage()
       // 预算 ¥1,000.00
-      expect(await screen.findByText(/¥1,000\.00/, FIND_OPTS)).toBeInTheDocument()
+      expect(await screen.findByText(/¥1,000\.00/, {}, FIND_OPTS)).toBeInTheDocument()
       // 实际 ¥300.00 出现多处
       expect(amountEls('¥300.00').length).toBeGreaterThan(0)
       // 剩余 ¥700.00
@@ -317,7 +317,7 @@ describe('阶段 5：消费记录模块', () => {
       })
       useTripStore.setState({ currentTripId: t.id })
       renderPage()
-      expect(await screen.findByText(/超支/, FIND_OPTS)).toBeInTheDocument()
+      expect(await screen.findByText(/超支/, {}, FIND_OPTS)).toBeInTheDocument()
     })
   })
 

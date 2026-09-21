@@ -112,10 +112,10 @@ describe('阶段 10：视觉打磨与空状态统一', () => {
       expect(root.className).toContain('items-center')
       expect(root.className).toContain('justify-center')
       expect(root.className).toContain('text-center')
-      // 标题用 gray-900
-      expect(screen.getByText('还没有数据').className).toContain('gray-900')
-      // 描述用 gray-500
-      expect(screen.getByText('这是一段说明').className).toContain('gray-500')
+      // 标题用 fg-1
+      expect(screen.getByText('还没有数据').className).toContain('fg-1')
+      // 描述用 fg-2
+      expect(screen.getByText('这是一段说明').className).toContain('fg-2')
     })
 
     it('Modal 使用 .card 样式', () => {
@@ -129,15 +129,15 @@ describe('阶段 10：视觉打磨与空状态统一', () => {
       expect(card.className).toContain('card')
     })
 
-    it('Field 标签用 gray-700，必填用红色星号', () => {
+    it('Field 标签用 fg-2，必填用危险色星号', () => {
       render(
         <Field label="名称" required>
           <TextInput />
         </Field>,
       )
-      expect(screen.getByText('名称').className).toContain('gray-700')
+      expect(screen.getByText('名称').className).toContain('fg-2')
       expect(screen.getByText('*')).toBeInTheDocument()
-      expect(screen.getByText('*').className).toContain('red')
+      expect(screen.getByText('*').className).toContain('danger')
     })
   })
 
@@ -214,7 +214,7 @@ describe('阶段 10：视觉打磨与空状态统一', () => {
   })
 
   describe('侧栏导航视觉', () => {
-    it('侧栏白底 + 主色品牌图标', async () => {
+    it('侧栏玻璃材质 + 主色品牌图标', async () => {
       const { Sidebar } = await import('@/layout/Sidebar')
       render(
         <MemoryRouter>
@@ -222,7 +222,7 @@ describe('阶段 10：视觉打磨与空状态统一', () => {
         </MemoryRouter>,
       )
       const aside = screen.getByText('我的旅行').closest('aside')!
-      expect(aside.className).toContain('bg-white')
+      expect(aside.className).toContain('glass-thick')
       // 品牌图标存在
       const brandIcon = screen.getByText('我的旅行').previousSibling
       expect(brandIcon).toBeTruthy()

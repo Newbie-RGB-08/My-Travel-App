@@ -10,7 +10,7 @@ interface EmptyStateProps {
 export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center px-4 py-12 text-center">
-      <div className="mb-3 text-gray-300">
+      <div className="mb-3 text-white/25">
         {icon ?? (
           <svg
             className="h-12 w-12"
@@ -27,9 +27,9 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
           </svg>
         )}
       </div>
-      <h3 className="text-sm font-medium text-gray-900">{title}</h3>
+      <h3 className="text-sm font-medium text-fg-1">{title}</h3>
       {description && (
-        <p className="mt-1 text-xs text-gray-500">{description}</p>
+        <p className="mt-1 text-xs text-fg-2">{description}</p>
       )}
       {action && <div className="mt-4">{action}</div>}
     </div>

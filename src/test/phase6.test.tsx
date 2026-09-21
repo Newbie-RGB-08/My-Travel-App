@@ -83,7 +83,7 @@ describe('阶段 6：游玩攻略模块', () => {
       renderPage()
       await screen.findByText('原攻略', {}, FIND_OPTS)
       await user.click(screen.getByLabelText('编辑攻略'))
-      const titleInput = await screen.findByDisplayValue('原攻略', FIND_OPTS)
+      const titleInput = await screen.findByDisplayValue('原攻略', {}, FIND_OPTS)
       await user.clear(titleInput)
       await user.type(titleInput, '改后攻略')
       await user.click(screen.getByRole('button', { name: '保存' }))
@@ -253,10 +253,10 @@ describe('阶段 6：游玩攻略模块', () => {
       // DB：guide 关联 1 个附件，attachments 表有 1 条
       const guides = await crud.listGuides()
       expect(guides).toHaveLength(1)
-      expect(guides[0].attachmentIds).toHaveLength(1)
+      expect(guides[0]!.attachmentIds).toHaveLength(1)
       const atts = await db.attachments.toArray()
       expect(atts).toHaveLength(1)
-      expect(atts[0].mime).toBe('image/png')
+      expect(atts[0]!.mime).toBe('image/png')
       // 重新打开编辑，附件预览仍在（从 DB 读取 Blob）
       await user.click(screen.getByLabelText('编辑攻略'))
       await waitFor(
@@ -345,7 +345,7 @@ describe('阶段 6：游玩攻略模块', () => {
       expect(screen.getByText('#亲子')).toBeInTheDocument()
       expect(screen.getByText('#知识点')).toBeInTheDocument()
       const got = await crud.listGuides()
-      expect(got[0].tags).toEqual(['免费', '亲子', '知识点'])
+      expect(got[0]!.tags).toEqual(['免费', '亲子', '知识点'])
     })
   })
 })

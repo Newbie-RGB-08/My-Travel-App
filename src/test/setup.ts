@@ -17,7 +17,6 @@ if (!globalThis.URL.revokeObjectURL) {
 
 // matchMedia 兜底
 if (!window.matchMedia) {
-  // @ts-expect-error 测试桩
   window.matchMedia = (query: string) => ({
     matches: false,
     media: query,

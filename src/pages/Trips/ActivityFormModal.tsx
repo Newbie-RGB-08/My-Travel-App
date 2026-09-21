@@ -216,7 +216,7 @@ export function ActivityFormModal({
           <Field label="关联交通" hint={`已选 ${linkedTransportIds.length}`}>
             <div className="max-h-32 space-y-1 overflow-y-auto">
               {transports.length === 0 ? (
-                <span className="text-xs text-gray-400">本行程暂无交通</span>
+                <span className="text-xs text-fg-3">本行程暂无交通</span>
               ) : (
                 transports.map((t) => (
                   <Checkbox
@@ -232,7 +232,7 @@ export function ActivityFormModal({
           <Field label="关联消费" hint={`已选 ${linkedExpenseIds.length}`}>
             <div className="max-h-32 space-y-1 overflow-y-auto">
               {expenses.length === 0 ? (
-                <span className="text-xs text-gray-400">本行程暂无消费</span>
+                <span className="text-xs text-fg-3">本行程暂无消费</span>
               ) : (
                 expenses.map((e) => (
                   <Checkbox
@@ -250,7 +250,7 @@ export function ActivityFormModal({
           <Field label="关联攻略" hint={`已选 ${linkedGuideIds.length}`}>
             <div className="max-h-32 space-y-1 overflow-y-auto">
               {guides.length === 0 ? (
-                <span className="text-xs text-gray-400">本行程暂无攻略</span>
+                <span className="text-xs text-fg-3">本行程暂无攻略</span>
               ) : (
                 guides.map((g) => (
                   <Checkbox
@@ -264,8 +264,8 @@ export function ActivityFormModal({
             </div>
           </Field>
         </div>
-        <p className="text-xs text-gray-400">
-          关联后，活动卡片会显示 🚄/💰/📖 图标，点击可跳转到对应模块并高亮。
+        <p className="text-xs text-fg-3">
+          关联后，活动卡片会显示交通/消费/攻略图标，点击可跳转到对应模块并高亮。
         </p>
       </form>
     </Modal>

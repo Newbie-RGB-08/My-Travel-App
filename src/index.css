@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== Liquid Glass 设计变量（深色 · 第一版） ===== */
+:root {
+  --bg-base: #0b0e13;
+  --glass-thick-bg: rgb(255 255 255 / 0.08);
+  --glass-bg: rgb(255 255 255 / 0.055);
+  --glass-thin-bg: rgb(255 255 255 / 0.04);
+  --glass-active-bg: rgb(255 255 255 / 0.12);
+  --glass-border: rgb(255 255 255 / 0.09);
+  --glass-border-strong: rgb(255 255 255 / 0.16);
+  --glass-highlight: rgb(255 255 255 / 0.12);
+  --glass-blur-thick: 36px;
+  --glass-blur: 22px;
+  --accent: #0a84ff;
+}
+
 @layer base {
   html,
   body,
@@ -10,7 +25,8 @@
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-base text-fg-1 antialiased;
+    color-scheme: dark;
     margin: 0;
     font-family: theme('fontFamily.sans');
     line-height: 1.6;
@@ -20,57 +36,291 @@
     box-sizing: border-box;
   }
 
-  /* 统一文字三档灰 + 分隔线浅灰已通过 gray-300/400/500/900 原子类体现 */
+  /* 原生下拉选项深色（color-scheme: dark 之外的兜底） */
+  select option {
+    background: #1a1e26;
+    color: #f2f4f8;
+  }
 
-  /* 细滚动条，匹配 Notion/Linear 简约感 */
+  /* 细滚动条，深色玻璃环境 */
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgb(203 213 225) transparent;
+    scrollbar-color: rgb(255 255 255 / 0.18) transparent;
   }
   *::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
   *::-webkit-scrollbar-thumb {
-    background: rgb(203 213 225);
+    background: rgb(255 255 255 / 0.18);
     border-radius: 4px;
   }
   *::-webkit-scrollbar-thumb:hover {
-    background: rgb(148 163 184);
+    background: rgb(255 255 255 / 0.3);
   }
 
-  /* 选区配色 */
+  /* 选区配色：系统蓝半透明 + 白字 */
   ::selection {
-    background: theme('colors.brand.100');
-    color: theme('colors.brand.800');
+    background: rgb(10 132 255 / 0.28);
+    color: #ffffff;
   }
 }
 
 @layer components {
+  /* ===== 按钮（旧类名保留：.btn-primary/.btn-secondary/.btn-danger/.btn-ghost） ===== */
   .btn {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-1.5 rounded-control px-3 py-1.5 text-sm font-medium transition-all duration-200 ease-liquid focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-base disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.97];
   }
   .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-700;
+    @apply btn bg-brand-600 text-white hover:bg-brand-500;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.18),
+      0 6px 16px -6px rgb(10 132 255 / 0.5);
   }
   .btn-secondary {
-    @apply btn bg-white text-gray-700 border border-gray-200 hover:bg-gray-50;
+    @apply btn border border-line bg-white/5 text-fg-1 hover:bg-white/10;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
   }
   .btn-danger {
-    @apply btn bg-red-600 text-white hover:bg-red-700;
+    @apply btn bg-danger text-white hover:brightness-110;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.16),
+      0 6px 16px -6px rgb(255 69 58 / 0.45);
   }
   .btn-ghost {
-    @apply btn text-gray-600 hover:bg-gray-100;
+    @apply btn text-fg-2 hover:bg-white/10 hover:text-fg-1;
   }
 
+  /* ===== 输入控件（旧类名保留：.input） ===== */
   .input {
-    @apply w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500;
+    @apply w-full rounded-control border border-line bg-white/[0.06] px-3 py-2 text-sm text-fg-1 transition-colors placeholder:text-fg-3 focus:border-brand-500/70 focus:outline-none focus:ring-2 focus:ring-brand-500/25;
   }
 
+  /* ===== 玻璃材质层级 ===== */
+  /* 常规玻璃卡片（.card 旧类名保留，与 .glass 同定义） */
+  .glass,
   .card {
-    @apply rounded-lg border border-gray-200 bg-white shadow-card transition-shadow;
+    @apply rounded-card border border-line text-fg-1 shadow-card;
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .card-hover:hover {
-    @apply shadow-card-hover;
+    @apply -translate-y-0.5 shadow-card-hover;
+    background-color: rgb(255 255 255 / 0.08);
+  }
+
+  /* 厚玻璃：侧栏 / 浮层 / 弹窗面板 */
+  .glass-thick {
+    @apply rounded-pop border border-line text-fg-1 shadow-pop;
+    background-color: var(--glass-thick-bg);
+    backdrop-filter: blur(var(--glass-blur-thick)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur-thick)) saturate(180%);
+  }
+
+  /* 薄玻璃：嵌套槽位 / 标签 / 次按钮 */
+  .glass-thin {
+    @apply rounded-control border border-line;
+    background-color: var(--glass-thin-bg);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+    backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  }
+
+  /* 凹陷容器：行程详情时段槽 */
+  .glass-inset {
+    @apply rounded-control border border-line;
+    background: rgb(255 255 255 / 0.03);
+    box-shadow: inset 0 2px 8px rgb(0 0 0 / 0.35);
+  }
+
+  /* 选中态药丸：侧栏导航 / 强选中 */
+  .glass-active {
+    @apply text-fg-1;
+    background-color: var(--glass-active-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+      inset 0 1px 0 var(--glass-highlight),
+      0 1px 2px rgb(0 0 0 / 0.25);
+    backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  }
+
+  /* ===== 筛选 chip ===== */
+  .chip {
+    @apply inline-flex cursor-pointer items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium text-fg-2 transition-colors;
+    background: rgb(255 255 255 / 0.06);
+  }
+  .chip:hover {
+    background: rgb(255 255 255 / 0.12);
+  }
+  .chip-active {
+    @apply chip text-fg-1;
+    background-color: var(--glass-active-bg);
+    box-shadow: inset 0 1px 0 var(--glass-highlight);
+  }
+
+  /* ===== 徽章（.badge + data-tone） ===== */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium;
+  }
+  .badge[data-tone='neutral'] {
+    color: rgb(255 255 255 / 0.75);
+    background: rgb(255 255 255 / 0.12);
+  }
+  .badge[data-tone='accent'] {
+    color: #6bb2ff;
+    background: rgb(10 132 255 / 0.16);
+  }
+  .badge[data-tone='ok'] {
+    color: #6be58a;
+    background: rgb(48 209 88 / 0.16);
+  }
+  .badge[data-tone='warn'] {
+    color: #ffb84d;
+    background: rgb(255 159 10 / 0.16);
+  }
+  .badge[data-tone='danger'] {
+    color: #ff6b61;
+    background: rgb(255 69 58 / 0.16);
+  }
+  .badge[data-tone='violet'] {
+    color: #d78fff;
+    background: rgb(191 90 242 / 0.16);
+  }
+  .badge[data-tone='pink'] {
+    color: #ff6e86;
+    background: rgb(255 55 95 / 0.16);
+  }
+
+  /* ===== 弹窗 ===== */
+  .modal-scrim {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in;
+    background: rgb(0 0 0 / 0.5);
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+  }
+  .modal-panel {
+    @apply animate-glass-in;
+  }
+
+  /* ===== 地图图钉 ===== */
+  .leaflet-div-icon.map-mark-icon {
+    background: transparent;
+    border: 0;
+  }
+  .map-pin {
+    width: 28px;
+    height: 28px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(20 24 32 / 0.82);
+    border: 2px solid var(--pin, #0a84ff);
+    box-shadow:
+      0 2px 8px rgb(0 0 0 / 0.5),
+      inset 0 1px 0 rgb(255 255 255 / 0.15);
+    color: #ffffff;
+  }
+
+  /* ===== 环境光晕背景 ===== */
+  .glass-ambient {
+    @apply fixed inset-0 z-0 overflow-hidden bg-base;
+    pointer-events: none;
+  }
+  .ambient-blob {
+    @apply absolute block rounded-full;
+    width: 46vw;
+    height: 46vw;
+    filter: blur(140px);
+    opacity: 0.45;
+    will-change: transform;
+  }
+  .ambient-blob-1 {
+    top: -12%;
+    left: -8%;
+    background: radial-gradient(circle at 30% 30%, #2743a1 0%, transparent 70%);
+  }
+  .ambient-blob-2 {
+    top: 18%;
+    right: -14%;
+    width: 40vw;
+    height: 40vw;
+    background: radial-gradient(circle at 60% 40%, #0e6b73 0%, transparent 70%);
+  }
+  .ambient-blob-3 {
+    bottom: -18%;
+    left: 28%;
+    width: 42vw;
+    height: 42vw;
+    background: radial-gradient(circle at 50% 50%, #7a4318 0%, transparent 70%);
+  }
+
+  /* ===== Leaflet 深色玻璃覆盖（仅控件/popup，瓦片不滤镜） ===== */
+  .leaflet-popup-content-wrapper {
+    background: rgb(28 32 40 / 0.9);
+    color: rgb(255 255 255 / 0.92);
+    border-radius: 12px;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.08),
+      0 16px 40px -12px rgb(0 0 0 / 0.6);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+  }
+  .leaflet-popup-tip {
+    background: rgb(28 32 40 / 0.9);
+    border: 1px solid rgb(255 255 255 / 0.1);
+  }
+  .leaflet-popup-close-button {
+    color: rgb(255 255 255 / 0.6) !important;
+  }
+  .leaflet-bar a {
+    background: rgb(20 24 32 / 0.85);
+    color: #ffffff;
+    border-bottom: 1px solid rgb(255 255 255 / 0.1) !important;
+  }
+  .leaflet-bar a:hover {
+    background: rgb(48 54 64 / 0.9);
+  }
+  .leaflet-control-attribution {
+    background: rgb(0 0 0 / 0.35) !important;
+    color: rgb(255 255 255 / 0.5);
+  }
+  .leaflet-control-attribution a {
+    color: #6bb2ff;
+  }
+}
+
+/* ===== 不支持 backdrop-filter 时回退不透明深色底（保留边框/阴影层次） ===== */
+@supports not ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
+  .glass,
+  .card {
+    background-color: rgb(22 26 33);
+  }
+  .glass-thick {
+    background-color: rgb(26 30 38);
+  }
+  .glass-thin {
+    background-color: rgb(30 34 42);
+  }
+  .glass-active {
+    background-color: rgb(48 54 64);
+  }
+}
+
+/* ===== 减少动态效果：光晕静止、弹窗无位移 ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .ambient-blob {
+    animation: none !important;
   }
 }

@@ -31,7 +31,7 @@ export function TripSwitcher() {
 
   return (
     <div>
-      <div className="mb-1 px-1 text-xs font-medium text-gray-400">当前行程</div>
+      <div className="mb-1 px-1 text-xs font-medium text-fg-3">当前行程</div>
       <div className="relative">
         <select
           className="input appearance-none pr-8"
@@ -45,7 +45,7 @@ export function TripSwitcher() {
             </option>
           ))}
         </select>
-        <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-3" />
       </div>
     </div>
   )

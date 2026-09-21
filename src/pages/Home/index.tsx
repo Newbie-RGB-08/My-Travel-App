@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { format } from 'date-fns'
-import { MapPin, Plane, Wallet, BookOpen, ChevronRight } from 'lucide-react'
+import { MapPin, Plane, Wallet, BookOpen, ChevronRight, Star } from 'lucide-react'
 
 import { db } from '@/db/schema'
 import * as crud from '@/db/crud'
@@ -97,7 +97,7 @@ export default function Home() {
       <PageHeader
         title="首页总览"
         subtitle={
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-fg-2">
             当前行程：{trip.name}
           </span>
         }
@@ -107,13 +107,13 @@ export default function Home() {
         {/* 区块1：行程概况 */}
         <section className="card p-5" data-home-block="trip">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="flex items-center gap-1.5 text-sm font-semibold text-gray-900">
+            <h2 className="flex items-center gap-1.5 text-sm font-semibold text-fg-1">
               <MapPin className="h-4 w-4 text-brand-500" />
               行程概况
             </h2>
             <Link
               to="/trips"
-              className="inline-flex items-center text-xs text-brand-600 hover:underline"
+              className="inline-flex items-center text-xs text-brand-300 hover:underline"
               aria-label="查看全部行程"
             >
               查看全部
@@ -121,30 +121,30 @@ export default function Home() {
             </Link>
           </div>
           <div className="flex items-center gap-2">
-            <h3 className="text-lg font-semibold text-gray-900">{trip.name}</h3>
+            <h3 className="text-lg font-semibold text-fg-1">{trip.name}</h3>
             <StatusBadge status={trip.status} />
           </div>
-          <div className="mt-1 text-sm text-gray-500">
+          <div className="mt-1 text-sm text-fg-2">
             {trip.destination || '未填目的地'}
           </div>
-          <div className="mt-0.5 text-xs text-gray-400">
+          <div className="mt-0.5 text-xs text-fg-3">
             {formatDateRange(trip.startDate, trip.endDate)}
           </div>
-          <div className="mt-3 border-t border-gray-100 pt-3 text-sm">
+          <div className="mt-3 border-t border-line-soft pt-3 text-sm">
             <div className="flex items-center justify-between">
-              <span className="text-gray-500">预算</span>
-              <span className="font-medium text-gray-900">
+              <span className="text-fg-2">预算</span>
+              <span className="font-medium text-fg-1">
                 {formatMoney(budget)}
               </span>
             </div>
             <div className="mt-1 flex items-center justify-between">
-              <span className="text-gray-500">已花费</span>
-              <span className="font-medium text-gray-900">{formatMoney(total)}</span>
+              <span className="text-fg-2">已花费</span>
+              <span className="font-medium text-fg-1">{formatMoney(total)}</span>
             </div>
             <div className="mt-1 flex items-center justify-between">
-              <span className="text-gray-500">剩余</span>
+              <span className="text-fg-2">剩余</span>
               <span
-                className={`font-medium ${overspent ? 'text-red-600' : 'text-green-600'}`}
+                className={`font-medium ${overspent ? 'text-danger' : 'text-ok'}`}
               >
                 {formatMoney(remaining)}
               </span>
@@ -155,13 +155,13 @@ export default function Home() {
         {/* 区块2：临近交通 */}
         <section className="card p-5" data-home-block="transports">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="flex items-center gap-1.5 text-sm font-semibold text-gray-900">
+            <h2 className="flex items-center gap-1.5 text-sm font-semibold text-fg-1">
               <Plane className="h-4 w-4 text-brand-500" />
               临近交通
             </h2>
             <Link
               to="/transports"
-              className="inline-flex items-center text-xs text-brand-600 hover:underline"
+              className="inline-flex items-center text-xs text-brand-300 hover:underline"
               aria-label="查看全部交通安排"
             >
               查看全部
@@ -169,7 +169,7 @@ export default function Home() {
             </Link>
           </div>
           {upcoming.length === 0 ? (
-            <p className="py-4 text-center text-xs text-gray-400">
+            <p className="py-4 text-center text-xs text-fg-3">
               暂无临近交通安排
             </p>
           ) : (
@@ -177,36 +177,36 @@ export default function Home() {
               {upcoming.map((t) => {
                 const meta = TRANSPORT_META[t.type]
                 const s = STATUS_META[t.status]
+                const MetaIcon = meta.icon
                 const highlight = t.status === 'pending'
                 return (
                   <li
                     key={t.id}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-sm ${
-                      highlight ? 'bg-amber-50' : ''
+                      highlight ? 'bg-warn/10' : ''
                     }`}
                     data-transport-id={t.id}
                     data-transport-status={t.status}
                   >
-                    <span className="text-lg" aria-hidden="true">
-                      {meta.icon}
-                    </span>
+                    <MetaIcon className="h-4 w-4 shrink-0 text-fg-2" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
-                        <span className="truncate text-gray-900">
+                        <span className="truncate text-fg-1">
                           {t.from || '—'} → {t.to || '—'}
                         </span>
                         {t.no && (
-                          <span className="truncate text-xs text-gray-500">
+                          <span className="truncate text-xs text-fg-2">
                             {t.no}
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-fg-3">
                         {formatDateTime(t.departAt)}
                       </div>
                     </div>
                     <span
-                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${s.cls}`}
+                      className={`badge text-[10px] ${s.strike ? 'line-through' : ''}`}
+                      data-tone={s.tone}
                     >
                       {s.label}
                     </span>
@@ -220,13 +220,13 @@ export default function Home() {
         {/* 区块3：消费汇总 */}
         <section className="card p-5" data-home-block="expenses">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="flex items-center gap-1.5 text-sm font-semibold text-gray-900">
+            <h2 className="flex items-center gap-1.5 text-sm font-semibold text-fg-1">
               <Wallet className="h-4 w-4 text-brand-500" />
               消费汇总
             </h2>
             <Link
               to="/expenses"
-              className="inline-flex items-center text-xs text-brand-600 hover:underline"
+              className="inline-flex items-center text-xs text-brand-300 hover:underline"
               aria-label="查看全部消费记录"
             >
               查看全部
@@ -235,13 +235,13 @@ export default function Home() {
           </div>
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-xs text-gray-400">总花费</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-xs text-fg-3">总花费</p>
+              <p className="text-2xl font-bold text-fg-1">
                 {formatMoney(total)}
               </p>
             </div>
             {budget > 0 && (
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-fg-3">
                 预算 {formatMoney(budget)} · {Math.min(100, budget > 0 ? (total / budget) * 100 : 0).toFixed(0)}%
               </p>
             )}
@@ -271,9 +271,9 @@ export default function Home() {
                 })}
             </div>
           ) : (
-            <p className="mt-3 text-center text-xs text-gray-400">暂无消费</p>
+            <p className="mt-3 text-center text-xs text-fg-3">暂无消费</p>
           )}
-          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-gray-500">
+          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-fg-2">
             {(Object.keys(byCategory) as ExpenseCategory[])
               .filter((k) => byCategory[k] > 0)
               .map((k) => (
@@ -291,13 +291,13 @@ export default function Home() {
         {/* 区块4：收藏攻略 */}
         <section className="card p-5" data-home-block="guides">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="flex items-center gap-1.5 text-sm font-semibold text-gray-900">
+            <h2 className="flex items-center gap-1.5 text-sm font-semibold text-fg-1">
               <BookOpen className="h-4 w-4 text-brand-500" />
               收藏攻略
             </h2>
             <Link
               to="/guides"
-              className="inline-flex items-center text-xs text-brand-600 hover:underline"
+              className="inline-flex items-center text-xs text-brand-300 hover:underline"
               aria-label="查看全部攻略"
             >
               查看全部
@@ -305,7 +305,7 @@ export default function Home() {
             </Link>
           </div>
           {favGuides.length === 0 ? (
-            <p className="py-4 text-center text-xs text-gray-400">
+            <p className="py-4 text-center text-xs text-fg-3">
               暂无收藏攻略
             </p>
           ) : (
@@ -313,15 +313,15 @@ export default function Home() {
               {favGuides.map((g) => (
                 <li
                   key={g.id}
-                  className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-gray-50"
+                  className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-white/10"
                 >
-                  <span className="text-base">⭐</span>
+                  <Star className="h-4 w-4 shrink-0 text-warn" fill="currentColor" />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-gray-900">
+                    <span className="block truncate text-fg-1">
                       {g.title}
                     </span>
                     {g.destination && (
-                      <span className="block truncate text-[10px] text-gray-400">
+                      <span className="block truncate text-[10px] text-fg-3">
                         {g.destination}
                       </span>
                     )}
