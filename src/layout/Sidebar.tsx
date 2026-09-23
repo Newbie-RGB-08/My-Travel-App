@@ -14,7 +14,7 @@ const navItems = [
 
 export function Sidebar() {
   return (
-    <aside className="glass-thick relative z-10 flex h-full w-60 shrink-0 flex-col rounded-none border-y-0 border-l-0">
+    <aside className="glass-thick relative z-10 hidden h-full w-60 shrink-0 flex-col rounded-none border-y-0 border-l-0 lg:flex">
       <div className="flex items-center gap-2 px-5 py-4">
         <Compass className="h-6 w-6 shrink-0 text-brand-600" />
         <span className="text-base font-semibold text-fg-1">我的旅行</span>

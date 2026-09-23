@@ -157,7 +157,7 @@ export function TransportFormModal({
       }
     >
       <form className="space-y-4" onSubmit={submit}>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="类型" required>
             <Select {...register('type')}>
               {TYPE_OPTIONS.map((t) => (
@@ -180,7 +180,7 @@ export function TransportFormModal({
         <Field label="班次号" hint="如：CA1234、G123、D802">
           <TextInput {...register('no')} placeholder="如：CA1234" />
         </Field>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="出发地" required>
             <TextInput {...register('from', { required: true })} placeholder="如：北京首都机场" />
           </Field>
@@ -188,7 +188,7 @@ export function TransportFormModal({
             <TextInput {...register('to', { required: true })} placeholder="如：上海虹桥" />
           </Field>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="出发时间" required>
             <TextInput type="datetime-local" {...register('departAt', { required: true })} />
           </Field>
@@ -196,7 +196,7 @@ export function TransportFormModal({
             <TextInput type="datetime-local" {...register('arriveAt')} />
           </Field>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="座位">
             <TextInput {...register('seat')} placeholder="如：12A" />
           </Field>

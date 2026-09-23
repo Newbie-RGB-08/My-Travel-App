@@ -213,7 +213,7 @@ export function GuideFormModal({
         <Field label="标题" required>
           <TextInput {...register('title', { required: true })} placeholder="如：故宫半日游攻略" />
         </Field>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="目的地">
             <TextInput {...register('destination')} placeholder="如：北京" />
           </Field>
@@ -270,7 +270,7 @@ export function GuideFormModal({
         <Field label="标签" hint="多个用逗号分隔">
           <TextInput {...register('tags')} placeholder="如：免费, 亲子" />
         </Field>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="关联行程">
             <Select {...register('tripId')}>
               <option value="">未关联</option>

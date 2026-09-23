@@ -249,4 +249,50 @@ describe('阶段 10：视觉打磨与空状态统一', () => {
       })
     })
   })
+
+  describe('手机端底部导航', () => {
+    it('渲染 7 个导航项，顺序与文案符合文档', async () => {
+      const { MobileNav } = await import('@/layout/MobileNav')
+      render(
+        <MemoryRouter>
+          <MobileNav />
+        </MemoryRouter>,
+      )
+      const labels = ['首页', '行程', '交通', '地图', '攻略', '消费', '设置']
+      labels.forEach((l) => expect(screen.getByText(l)).toBeInTheDocument())
+      const nav = screen.getByRole('navigation', { name: '底部导航' })
+      const links = Array.from(nav.querySelectorAll('a'))
+      expect(links.map((a) => a.textContent)).toEqual(labels)
+    })
+
+    it('底部导航为悬浮玻璃胶囊且仅手机端显示', async () => {
+      const { MobileNav } = await import('@/layout/MobileNav')
+      render(
+        <MemoryRouter>
+          <MobileNav />
+        </MemoryRouter>,
+      )
+      const nav = screen.getByRole('navigation', { name: '底部导航' })
+      expect(nav.className).toContain('glass-thick')
+      expect(nav.className).toContain('fixed')
+      expect(nav.className).toContain('lg:hidden')
+    })
+
+    it('AppLayout 同时保留侧栏（桌面显示）与底部导航（手机显示）', async () => {
+      const { AppLayout } = await import('@/layout/AppLayout')
+      render(
+        <MemoryRouter>
+          <AppLayout />
+        </MemoryRouter>,
+      )
+      const aside = screen.getByText('我的旅行').closest('aside')!
+      expect(aside.className).toContain('hidden')
+      expect(aside.className).toContain('lg:flex')
+      expect(
+        screen.getByRole('navigation', { name: '底部导航' }),
+      ).toBeInTheDocument()
+      const main = document.querySelector('main')!
+      expect(main.className).toContain('lg:pb-0')
+    })
+  })
 })

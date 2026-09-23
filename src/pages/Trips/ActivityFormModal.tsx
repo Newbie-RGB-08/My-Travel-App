@@ -176,7 +176,7 @@ export function ActivityFormModal({
       }
     >
       <form className="space-y-4" onSubmit={submit}>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="日期" required>
             <TextInput type="date" {...register('date', { required: true })} />
           </Field>
@@ -190,7 +190,7 @@ export function ActivityFormModal({
             </Select>
           </Field>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="时间">
             <TextInput type="time" {...register('time')} />
           </Field>

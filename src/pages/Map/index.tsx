@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { MapPin, Plus, Pencil, Trash2, Route as RouteIcon, X } from 'lucide-react'
+import { MapPin, Plus, Pencil, Trash2, Route as RouteIcon, X, List } from 'lucide-react'
 
 import { db } from '@/db/schema'
 import * as crud from '@/db/crud'
@@ -34,6 +34,8 @@ export default function MapViewPage() {
   })
   // 路线编辑模式：选择多个标注按顺序连线
   const [routeMode, setRouteMode] = useState(false)
+  // 手机端标注/路线列表浮层开关（桌面端侧栏常显，此状态不影响桌面）
+  const [panelOpen, setPanelOpen] = useState(false)
   const [routeSelection, setRouteSelection] = useState<string[]>([])
   const [routeName, setRouteName] = useState('')
 
@@ -85,6 +87,8 @@ export default function MapViewPage() {
   const handleSelectMark = (m: MapMark) => {
     // 点击列表项 → 地图飞行定位
     setFocus({ lat: m.lat, lng: m.lng })
+    // 手机端浮层：定位后收起列表以便查看地图（桌面端无影响）
+    setPanelOpen(false)
   }
 
   // 路线选择：点击 +/序号 把标注加入/移出选择序列
@@ -137,7 +141,7 @@ export default function MapViewPage() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="px-6 pt-6">
+      <div className="px-4 pt-6 sm:px-6">
         <PageHeader
           title="地图详情"
           subtitle={
@@ -150,6 +154,16 @@ export default function MapViewPage() {
           }
           actions={
             <div className="flex items-center gap-2">
+              {/* 手机端：呼出/收起标注列表浮层 */}
+              <button
+                type="button"
+                className={`btn-ghost border border-line lg:hidden ${panelOpen ? 'bg-white/10 text-fg-1' : ''}`}
+                onClick={() => setPanelOpen((v) => !v)}
+                aria-expanded={panelOpen}
+              >
+                <List className="h-4 w-4" />
+                列表
+              </button>
               {/* 瓦片源切换 */}
               <select
                 className="input max-w-[140px] py-1 text-xs"
@@ -185,9 +199,11 @@ export default function MapViewPage() {
         />
       </div>
 
-      <div className="flex min-h-0 flex-1 gap-4 px-6 pb-6">
-        {/* 左侧：标注列表 + 路线 */}
-        <aside className="flex w-80 shrink-0 flex-col gap-4 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 gap-4 px-4 pb-6 sm:px-6">
+        {/* 左侧：标注列表 + 路线（手机端为浮层，桌面端常显侧栏） */}
+        <aside
+          className={`${panelOpen ? 'map-panel-float flex' : 'hidden'} w-80 shrink-0 flex-col gap-4 overflow-y-auto lg:flex max-lg:w-auto`}
+        >
           <section className="card flex flex-col p-3">
             <div className="mb-2 flex items-center justify-between">
               <h2 className="text-sm font-semibold text-fg-1">标注</h2>

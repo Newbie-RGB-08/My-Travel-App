@@ -69,6 +69,11 @@ export function MapView({
   // 瓦片失败计数：连续多次失败才判定断网，避免单张瓦片抖动
   const errCountRef = useRef(0)
 
+  // 切换瓦片源时清零失败计数，避免旧源失败累计误判断网
+  useEffect(() => {
+    errCountRef.current = 0
+  }, [tileKey])
+
   // 路线 → polyline 坐标（按 markIds 顺序，找不到的悬挂 id 静默跳过）
   const routeLines = useMemo(() => {
     return routes.map((r) => ({
@@ -108,8 +113,13 @@ export function MapView({
             errCountRef.current += 1
             // 连续 3 次失败判定为断网降级
             if (errCountRef.current >= 3) {
+              errCountRef.current = 0
               onTileError()
             }
+          },
+          // 任一瓦片成功即视为在线，重置连续失败计数
+          tileload: () => {
+            errCountRef.current = 0
           },
         }}
       />

@@ -292,6 +292,28 @@
   .leaflet-control-attribution a {
     color: #6bb2ff;
   }
+
+  /* ===== 手机端地图面板浮层（<1024px：标注/路线列表改为按钮呼出的底部浮层） ===== */
+  @media (max-width: 1023.98px) {
+    .map-panel-float {
+      position: fixed;
+      left: 0.75rem;
+      right: 0.75rem;
+      bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+      top: auto;
+      z-index: 30;
+      max-height: min(62vh, 480px);
+      padding: 0.75rem;
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      background: rgb(22 26 33 / 0.92);
+      backdrop-filter: blur(36px) saturate(180%);
+      -webkit-backdrop-filter: blur(36px) saturate(180%);
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.12),
+        0 32px 80px -16px rgb(0 0 0 / 0.7);
+    }
+  }
 }
 
 /* ===== 不支持 backdrop-filter 时回退不透明深色底（保留边框/阴影层次） ===== */

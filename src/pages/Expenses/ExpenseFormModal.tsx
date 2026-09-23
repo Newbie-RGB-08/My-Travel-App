@@ -143,7 +143,7 @@ export function ExpenseFormModal({
       }
     >
       <form className="space-y-4" onSubmit={submit}>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="金额" required>
             <TextInput
               type="number"
@@ -163,7 +163,7 @@ export function ExpenseFormModal({
             </Select>
           </Field>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="时间" required>
             <TextInput type="datetime-local" {...register('time', { required: true })} />
           </Field>

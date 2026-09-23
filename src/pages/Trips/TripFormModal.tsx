@@ -103,7 +103,7 @@ export function TripFormModal({
         <Field label="目的地">
           <TextInput {...register('destination')} placeholder="如：北京" />
         </Field>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="开始日期">
             <TextInput type="date" {...register('startDate')} />
           </Field>
@@ -114,7 +114,7 @@ export function TripFormModal({
         <Field label="同行人" hint="多人用逗号分隔">
           <TextInput {...register('companions')} placeholder="如：张三, 李四" />
         </Field>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="预算（元）">
             <TextInput type="number" step="0.01" min="0" {...register('budget')} />
           </Field>
