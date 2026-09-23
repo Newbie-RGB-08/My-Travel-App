@@ -19,6 +19,12 @@ vite.config.d.ts
 # Agent / tool working directory
 .trae
 
+# Android SDK (local build toolchain, installed in-project)
+android-sdk
+
+# APK output
+apk-output
+
 # Editor directories
 .vscode/*
 !.vscode/extensions.json
