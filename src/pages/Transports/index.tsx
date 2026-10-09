@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import { Plus, Train } from 'lucide-react'
 
 import { db } from '@/db/schema'
+import { ownerAll, ownerByTrip } from '@/db/scope'
 import * as crud from '@/db/crud'
 import { useTripStore } from '@/store/useTripStore'
 import { useModalStore } from '@/store/useModalStore'
@@ -22,8 +23,8 @@ export default function Transports() {
   const transports = useLiveQuery(
     () =>
       currentTripId
-        ? db.transports.where('tripId').equals(currentTripId).toArray()
-        : db.transports.toArray(),
+        ? ownerByTrip(db.transports, currentTripId)
+        : ownerAll(db.transports),
     [currentTripId],
   ) ?? []
 

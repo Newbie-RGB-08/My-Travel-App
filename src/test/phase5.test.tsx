@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import 'fake-indexeddb/auto'
 import { resetDB } from '@/db/schema'
+import { ensureTestSession } from '@/test/helpers'
 import * as crud from '@/db/crud'
 import { useTripStore } from '@/store/useTripStore'
 import { useModalStore } from '@/store/useModalStore'
@@ -23,6 +24,7 @@ function renderPage() {
 
 beforeEach(async () => {
   await resetDB()
+  await ensureTestSession()
   useTripStore.setState({ currentTripId: null })
   useModalStore.setState({ content: null })
   useModalStore.setState((s) => ({ confirm: { ...s.confirm, open: false } }))

@@ -32,8 +32,17 @@ export type MapMarkType =
   | 'station'
   | 'custom'
 
+export interface User {
+  id: string
+  phone: string // 唯一
+  passwordHash: string // SHA-256(salt + password) 十六进制
+  salt: string // 每用户随机 16 字节 hex
+  createdAt: number
+}
+
 export interface Trip {
   id: string
+  ownerId: string // 所属账号
   name: string
   destination: string
   startDate: string // ISO date
@@ -46,6 +55,7 @@ export interface Trip {
 
 export interface Activity {
   id: string
+  ownerId: string
   tripId: string | null
   date: string // ISO date
   slot: ActivitySlot
@@ -60,6 +70,7 @@ export interface Activity {
 
 export interface Transport {
   id: string
+  ownerId: string
   tripId: string | null
   type: TransportType
   no: string
@@ -76,6 +87,7 @@ export interface Transport {
 
 export interface Expense {
   id: string
+  ownerId: string
   tripId: string | null
   activityId: string | null
   amount: number
@@ -88,6 +100,7 @@ export interface Expense {
 
 export interface Guide {
   id: string
+  ownerId: string
   title: string
   destination: string
   category: GuideCategory
@@ -101,6 +114,7 @@ export interface Guide {
 
 export interface MapMark {
   id: string
+  ownerId: string
   tripId: string | null
   name: string
   type: MapMarkType
@@ -111,6 +125,7 @@ export interface MapMark {
 
 export interface Route {
   id: string
+  ownerId: string
   tripId: string | null
   name: string
   markIds: string[] // 顺序连接
@@ -118,17 +133,18 @@ export interface Route {
 
 export interface Attachment {
   id: string
+  ownerId: string
   blob: Blob
   mime: string
   createdAt: number
 }
 
-// 通用创建输入类型（不含 id / 自动时间戳）
-export type NewTrip = Omit<Trip, 'id' | 'createdAt'>
-export type NewActivity = Omit<Activity, 'id'>
-export type NewTransport = Omit<Transport, 'id'>
-export type NewExpense = Omit<Expense, 'id'>
-export type NewGuide = Omit<Guide, 'id' | 'createdAt'>
-export type NewMapMark = Omit<MapMark, 'id'>
-export type NewRoute = Omit<Route, 'id'>
-export type NewAttachment = Omit<Attachment, 'id' | 'createdAt'>
+// 通用创建输入类型（不含 id / 自动时间戳 / 归属账号——ownerId 由数据库钩子注入）
+export type NewTrip = Omit<Trip, 'id' | 'createdAt' | 'ownerId'>
+export type NewActivity = Omit<Activity, 'id' | 'ownerId'>
+export type NewTransport = Omit<Transport, 'id' | 'ownerId'>
+export type NewExpense = Omit<Expense, 'id' | 'ownerId'>
+export type NewGuide = Omit<Guide, 'id' | 'createdAt' | 'ownerId'>
+export type NewMapMark = Omit<MapMark, 'id' | 'ownerId'>
+export type NewRoute = Omit<Route, 'id' | 'ownerId'>
+export type NewAttachment = Omit<Attachment, 'id' | 'createdAt' | 'ownerId'>

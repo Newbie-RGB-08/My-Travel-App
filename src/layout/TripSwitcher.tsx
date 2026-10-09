@@ -4,12 +4,13 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronDown, Plus } from 'lucide-react'
 
 import { db } from '@/db/schema'
+import { ownerAll } from '@/db/scope'
 import { useTripStore } from '@/store/useTripStore'
 
 export function TripSwitcher() {
   const navigate = useNavigate()
   const { currentTripId, setCurrentTrip } = useTripStore()
-  const trips = useLiveQuery(() => db.trips.toArray(), []) ?? []
+  const trips = useLiveQuery(() => ownerAll(db.trips), []) ?? []
 
   const current = useMemo(
     () => trips.find((t) => t.id === currentTripId) ?? null,

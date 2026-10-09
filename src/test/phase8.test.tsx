@@ -3,6 +3,7 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import 'fake-indexeddb/auto'
 import { resetDB } from '@/db/schema'
+import { ensureTestSession } from '@/test/helpers'
 import * as crud from '@/db/crud'
 import { useTripStore } from '@/store/useTripStore'
 import Home from '@/pages/Home'
@@ -19,6 +20,7 @@ function renderPage() {
 
 beforeEach(async () => {
   await resetDB()
+  await ensureTestSession()
   useTripStore.setState({ currentTripId: null })
 })
 

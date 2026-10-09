@@ -5,6 +5,7 @@ import { format } from 'date-fns'
 import { MapPin, Plane, Wallet, BookOpen, ChevronRight, Star } from 'lucide-react'
 
 import { db } from '@/db/schema'
+import { ownerByTrip, ownerGet } from '@/db/scope'
 import * as crud from '@/db/crud'
 import { useTripStore } from '@/store/useTripStore'
 import { PageHeader } from '@/components/common/PageHeader'
@@ -20,21 +21,21 @@ const UPCOMING_LIMIT = 5
 export default function Home() {
   const { currentTripId } = useTripStore()
   const trip = useLiveQuery(
-    () => (currentTripId ? db.trips.get(currentTripId) : undefined),
+    () => (currentTripId ? ownerGet(db.trips, currentTripId) : undefined),
     [currentTripId],
   )
   const transports = useLiveQuery(
     () =>
       currentTripId
-        ? db.transports.where('tripId').equals(currentTripId).toArray()
-        : [],
+        ? ownerByTrip(db.transports, currentTripId)
+        : Promise.resolve([] as import('@/types').Transport[]),
     [currentTripId],
   ) ?? []
   const expenses = useLiveQuery(
     () =>
       currentTripId
-        ? db.expenses.where('tripId').equals(currentTripId).toArray()
-        : [],
+        ? ownerByTrip(db.expenses, currentTripId)
+        : Promise.resolve([] as import('@/types').Expense[]),
     [currentTripId],
   ) ?? []
   const favGuides = useLiveQuery(() => crud.listFavoriteGuides(5), []) ?? []

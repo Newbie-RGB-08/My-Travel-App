@@ -4,7 +4,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Upload, X } from 'lucide-react'
 import { Modal } from '@/components/common/Modal'
 import { Field, TextInput, Select, TextArea, Checkbox } from '@/components/forms/Field'
-import { db } from '@/db/schema'
+import { ownerTripsAsc } from '@/db/scope'
 import * as crud from '@/db/crud'
 import type {
   Attachment,
@@ -103,7 +103,7 @@ export function GuideFormModal({
 }: GuideFormModalProps) {
   const [submitting, setSubmitting] = useState(false)
   const [attachments, setAttachments] = useState<Attachment[]>([])
-  const trips = useLiveQuery(() => db.trips.orderBy('startDate').toArray(), []) ?? []
+  const trips = useLiveQuery(() => ownerTripsAsc(), []) ?? []
   const { register, handleSubmit, reset } = useForm<FormValues>({
     defaultValues: buildDefaults(initial, defaultTripId),
   })

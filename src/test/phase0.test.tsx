@@ -1,9 +1,18 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import 'fake-indexeddb/auto'
 import { RouterProvider } from 'react-router-dom'
-import { render } from '@testing-library/react'
+import { render, cleanup } from '@testing-library/react'
 import App from '../App'
 import { router } from '../routes/router'
+import { resetDB } from '@/db/schema'
+import { ensureTestSession } from '@/test/helpers'
+
+beforeEach(async () => {
+  cleanup()
+  await resetDB()
+  // 布局在登录守卫之后，需要先建立登录态
+  await ensureTestSession()
+})
 
 describe('阶段 0：项目骨架', () => {
   it('App 能挂载 RouterProvider 而不崩溃', () => {

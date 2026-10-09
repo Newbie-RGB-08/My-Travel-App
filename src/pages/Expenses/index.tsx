@@ -5,6 +5,7 @@ import { Pie, PieChart, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import { Plus, Wallet } from 'lucide-react'
 
 import { db } from '@/db/schema'
+import { ownerAll, ownerByTrip, ownerGet } from '@/db/scope'
 import * as crud from '@/db/crud'
 import { useTripStore } from '@/store/useTripStore'
 import { useModalStore } from '@/store/useModalStore'
@@ -26,15 +27,15 @@ export default function Expenses() {
   const [categoryFilter, setCategoryFilter] = useState<ExpenseCategory | typeof ALL>(ALL)
 
   const currentTrip = useLiveQuery(
-    () => (currentTripId ? db.trips.get(currentTripId) : undefined),
+    () => (currentTripId ? ownerGet(db.trips, currentTripId) : undefined),
     [currentTripId],
   )
 
   const expenses = useLiveQuery(
     () =>
       currentTripId
-        ? db.expenses.where('tripId').equals(currentTripId).toArray()
-        : db.expenses.toArray(),
+        ? ownerByTrip(db.expenses, currentTripId)
+        : ownerAll(db.expenses),
     [currentTripId],
   ) ?? []
 

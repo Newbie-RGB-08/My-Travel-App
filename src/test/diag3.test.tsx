@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import 'fake-indexeddb/auto'
 import { resetDB } from '@/db/schema'
+import { ensureTestSession } from '@/test/helpers'
 import * as crud from '@/db/crud'
 import { useTripStore } from '@/store/useTripStore'
 import Trips from '@/pages/Trips'
@@ -11,6 +12,7 @@ import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 
 beforeEach(async () => {
   await resetDB()
+  await ensureTestSession()
   useTripStore.setState({ currentTripId: null })
 })
 

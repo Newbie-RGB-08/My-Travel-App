@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { MapPin, Plus, Pencil, Trash2, Route as RouteIcon, X, List } from 'lucide-react'
 
 import { db } from '@/db/schema'
+import { ownerAll, ownerByTrip } from '@/db/scope'
 import * as crud from '@/db/crud'
 import { useTripStore } from '@/store/useTripStore'
 import { useModalStore } from '@/store/useModalStore'
@@ -42,16 +43,16 @@ export default function MapViewPage() {
   const marks = useLiveQuery(
     () =>
       currentTripId
-        ? db.mapMarks.where('tripId').equals(currentTripId).toArray()
-        : db.mapMarks.toArray(),
+        ? ownerByTrip(db.mapMarks, currentTripId)
+        : ownerAll(db.mapMarks),
     [currentTripId],
   ) ?? []
 
   const routes = useLiveQuery(
     () =>
       currentTripId
-        ? db.routes.where('tripId').equals(currentTripId).toArray()
-        : db.routes.toArray(),
+        ? ownerByTrip(db.routes, currentTripId)
+        : ownerAll(db.routes),
     [currentTripId],
   ) ?? []
 

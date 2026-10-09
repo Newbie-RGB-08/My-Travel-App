@@ -4,6 +4,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Modal } from '@/components/common/Modal'
 import { Field, TextInput, Select, TextArea } from '@/components/forms/Field'
 import { db } from '@/db/schema'
+import { ownerByTrip, ownerTripsAsc } from '@/db/scope'
 import type {
   Expense,
   ExpenseCategory,
@@ -79,7 +80,7 @@ export function ExpenseFormModal({
   defaultTripId,
 }: ExpenseFormModalProps) {
   const [submitting, setSubmitting] = useState(false)
-  const trips = useLiveQuery(() => db.trips.orderBy('startDate').toArray(), []) ?? []
+  const trips = useLiveQuery(() => ownerTripsAsc(), []) ?? []
   const { register, handleSubmit, reset, watch } = useForm<FormValues>({
     defaultValues: buildDefaults(initial, defaultTripId),
   })
@@ -93,10 +94,7 @@ export function ExpenseFormModal({
   const watchTripId = watch('tripId')
   const activities =
     useLiveQuery(
-      () =>
-        watchTripId
-          ? db.activities.where('tripId').equals(watchTripId).toArray()
-          : [],
+      () => (watchTripId ? ownerByTrip(db.activities, watchTripId) : []),
       [watchTripId],
     ) ?? []
 

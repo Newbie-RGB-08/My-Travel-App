@@ -2,10 +2,12 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import 'fake-indexeddb/auto'
 
 import { resetDB } from '@/db/schema'
+import { ensureTestSession } from '@/test/helpers'
 import * as crud from '@/db/crud'
 
 beforeEach(async () => {
   await resetDB()
+  await ensureTestSession()
 })
 
 describe('阶段 1：数据层 CRUD', () => {

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft, Plus, Pencil, Trash2, Clock, Train, Wallet, BookOpen, Compass } from 'lucide-react'
 
 import { db } from '@/db/schema'
+import { ownerGet, ownerTripsDesc, ownerByTrip } from '@/db/scope'
 import * as crud from '@/db/crud'
 import { useTripStore } from '@/store/useTripStore'
 import { useModalStore } from '@/store/useModalStore'
@@ -34,9 +35,9 @@ export default function Trips() {
   const { currentTripId, setCurrentTrip } = useTripStore()
   const { openConfirm } = useModalStore()
 
-  const trips = useLiveQuery(() => db.trips.orderBy('startDate').reverse().toArray(), []) ?? []
+  const trips = useLiveQuery(() => ownerTripsDesc(), []) ?? []
   const currentTrip = useLiveQuery(
-    () => (currentTripId ? db.trips.get(currentTripId) : undefined),
+    () => (currentTripId ? ownerGet(db.trips, currentTripId) : undefined),
     [currentTripId],
   )
 
@@ -176,7 +177,7 @@ function TripDetail({
   setActivityModal,
 }: TripDetailProps) {
   const activities = useLiveQuery(
-    () => db.activities.where('tripId').equals(trip.id).toArray(),
+    () => ownerByTrip(db.activities, trip.id),
     [trip.id],
   ) ?? []
 

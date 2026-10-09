@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter, RouterProvider } from 'react-router-dom'
 import 'fake-indexeddb/auto'
 import { resetDB } from '@/db/schema'
+import { ensureTestSession } from '@/test/helpers'
 import { AppLayout } from '@/layout/AppLayout'
 import { TripSwitcher } from '@/layout/TripSwitcher'
 import { useTripStore } from '@/store/useTripStore'
@@ -24,6 +25,7 @@ function renderWithRouter(ui: React.ReactNode, initial = '/') {
 
 beforeEach(async () => {
   await resetDB()
+  await ensureTestSession()
   useTripStore.setState({ currentTripId: null })
 })
 

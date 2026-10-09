@@ -4,6 +4,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Modal } from '@/components/common/Modal'
 import { Field, TextInput, Select, TextArea, Checkbox } from '@/components/forms/Field'
 import { db } from '@/db/schema'
+import { ownerByTrip } from '@/db/scope'
 import { formatMoney } from '@/utils/format'
 import type {
   Activity,
@@ -90,24 +91,15 @@ export function ActivityFormModal({
 
   // 本行程下的交通/消费/攻略，供关联选择
   const transports = useLiveQuery(
-    () =>
-      tripId
-        ? db.transports.where('tripId').equals(tripId).toArray()
-        : [],
+    () => (tripId ? ownerByTrip(db.transports, tripId) : []),
     [tripId],
   ) ?? []
   const expenses = useLiveQuery(
-    () =>
-      tripId
-        ? db.expenses.where('tripId').equals(tripId).toArray()
-        : [],
+    () => (tripId ? ownerByTrip(db.expenses, tripId) : []),
     [tripId],
   ) ?? []
   const guides = useLiveQuery(
-    () =>
-      tripId
-        ? db.guides.where('tripId').equals(tripId).toArray()
-        : [],
+    () => (tripId ? ownerByTrip(db.guides, tripId) : []),
     [tripId],
   ) ?? []
 

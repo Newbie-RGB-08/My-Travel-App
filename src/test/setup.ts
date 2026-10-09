@@ -38,3 +38,22 @@ class ResizeObserverMock {
 if (!globalThis.ResizeObserver) {
   globalThis.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver
 }
+
+// jsdom 的 AbortSignal 传入 Node(undici) 的 Request 会因跨 realm 校验失败，
+// 导致 react-router 数据路由导航抛错、整树无法渲染。
+// 测试中不需要导航中断能力，这里包装全局 Request 丢弃 signal。
+const RealRequest = globalThis.Request as
+  | (typeof Request & {
+      new (input: RequestInfo | URL, init?: RequestInit): Request
+    })
+  | undefined
+if (RealRequest) {
+  class PatchedRequest extends RealRequest {
+    constructor(input: RequestInfo | URL, init?: RequestInit) {
+      const safeInit = { ...(init ?? {}) } as RequestInit
+      delete safeInit.signal
+      super(input, safeInit)
+    }
+  }
+  globalThis.Request = PatchedRequest as typeof Request
+}

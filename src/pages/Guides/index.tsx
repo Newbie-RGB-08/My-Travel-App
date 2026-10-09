@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import { Plus, BookOpen } from 'lucide-react'
 
 import { db } from '@/db/schema'
+import { ownerAll, ownerByTrip } from '@/db/scope'
 import * as crud from '@/db/crud'
 import { useTripStore } from '@/store/useTripStore'
 import { useModalStore } from '@/store/useModalStore'
@@ -27,8 +28,8 @@ export default function Guides() {
   const guides = useLiveQuery(
     () =>
       currentTripId
-        ? db.guides.where('tripId').equals(currentTripId).toArray()
-        : db.guides.toArray(),
+        ? ownerByTrip(db.guides, currentTripId)
+        : ownerAll(db.guides),
     [currentTripId],
   ) ?? []
 

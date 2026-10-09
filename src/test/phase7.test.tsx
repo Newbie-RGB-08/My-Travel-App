@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import 'fake-indexeddb/auto'
 import { resetDB } from '@/db/schema'
+import { ensureTestSession } from '@/test/helpers'
 import * as crud from '@/db/crud'
 import { useTripStore } from '@/store/useTripStore'
 import { useModalStore } from '@/store/useModalStore'
@@ -61,6 +62,7 @@ function renderPage() {
 
 beforeEach(async () => {
   await resetDB()
+  await ensureTestSession()
   useTripStore.setState({ currentTripId: null })
   useModalStore.setState({ content: null })
   useModalStore.setState((s) => ({ confirm: { ...s.confirm, open: false } }))
@@ -92,38 +94,76 @@ describe('阶段 7：地图详情模块', () => {
   })
 
   describe('标注 CRUD', () => {
-    it('点"添加标注"按钮 → 填表 → 保存 → 列表出现', async () => {
+    it('点"添加标注"按钮 → 搜索地点 → 选定 → 保存 → 列表出现', async () => {
+      const fetchMock = vi.fn(async () => ({
+        ok: true,
+        json: async () => ({
+          status: '1',
+          pois: [
+            {
+              name: '故宫博物院',
+              typecode: '110000',
+              address: '景山前街4号',
+              cityname: '北京市',
+              adname: '东城区',
+              location: '116.3972,39.9163',
+            },
+          ],
+        }),
+      }))
+      vi.stubGlobal('fetch', fetchMock)
       const user = userEvent.setup()
-      renderPage()
-      await screen.findByText('还没有标注', {}, FIND_OPTS)
-      await user.click(screen.getByRole('button', { name: '添加标注' }))
-      await screen.findByPlaceholderText('如：故宫')
-      await user.type(screen.getByPlaceholderText('如：故宫'), '故宫')
-      await user.type(screen.getByPlaceholderText('如：39.9163'), '39.9163')
-      await user.type(screen.getByPlaceholderText('如：116.3972'), '116.3972')
-      await user.click(screen.getByRole('button', { name: '保存' }))
-      await waitFor(
-        () => {
-          expect(
-            screen.queryByRole('button', { name: '保存' }),
-          ).not.toBeInTheDocument()
-        },
-        { timeout: 3000 },
-      )
-      expect(await screen.findByText('故宫', {}, FIND_OPTS)).toBeInTheDocument()
-      const all = await crud.listMapMarks()
-      expect(all).toHaveLength(1)
-      expect(all[0]!.name).toBe('故宫')
+      try {
+        renderPage()
+        await screen.findByText('还没有标注', {}, FIND_OPTS)
+        await user.click(screen.getByRole('button', { name: '添加标注' }))
+        const searchInput = await screen.findByLabelText('搜索地点', {}, FIND_OPTS)
+        // 未选定地点前保存不可用
+        expect(screen.getByRole('button', { name: '保存' })).toBeDisabled()
+        await user.type(searchInput, '故宫')
+        const resultBtn = await screen.findByRole(
+          'button',
+          { name: /故宫博物院/ },
+          FIND_OPTS,
+        )
+        await user.click(resultBtn)
+        // 名称由选定地点自动填入
+        await screen.findByDisplayValue('故宫博物院', {}, FIND_OPTS)
+        expect(screen.getByRole('button', { name: '保存' })).toBeEnabled()
+        await user.click(screen.getByRole('button', { name: '保存' }))
+        await waitFor(
+          () => {
+            expect(
+              screen.queryByRole('button', { name: '保存' }),
+            ).not.toBeInTheDocument()
+          },
+          { timeout: 3000 },
+        )
+        expect(
+          await screen.findByText('故宫博物院', {}, FIND_OPTS),
+        ).toBeInTheDocument()
+        const all = await crud.listMapMarks()
+        expect(all).toHaveLength(1)
+        expect(all[0]!.name).toBe('故宫博物院')
+        expect(all[0]!.lat).toBe(39.9163)
+        expect(all[0]!.lng).toBe(116.3972)
+      } finally {
+        vi.unstubAllGlobals()
+      }
     })
 
-    it('模拟地图点击 → 表单带预填坐标 → 保存', async () => {
+    it('模拟地图点击 → 位置自动确定 → 填名称保存', async () => {
       const user = userEvent.setup()
       renderPage()
       await screen.findByText('还没有标注', {}, FIND_OPTS)
-      await user.click(screen.getByRole('button', { name: '模拟点击地图添加标注' }))
-      const latInput = await screen.findByDisplayValue('39.9163', {}, FIND_OPTS)
-      expect(latInput).toBeInTheDocument()
-      expect(screen.getByDisplayValue('116.3972')).toBeInTheDocument()
+      await user.click(
+        screen.getByRole('button', { name: '模拟点击地图添加标注' }),
+      )
+      // 点击模式：不显示搜索框，位置条提示已选定
+      expect(
+        await screen.findByText('位置：地图上选定的点', {}, FIND_OPTS),
+      ).toBeInTheDocument()
+      expect(screen.queryByLabelText('搜索地点')).not.toBeInTheDocument()
       await user.type(screen.getByPlaceholderText('如：故宫'), '天安门')
       await user.click(screen.getByRole('button', { name: '保存' }))
       await waitFor(
@@ -135,6 +175,57 @@ describe('阶段 7：地图详情模块', () => {
         { timeout: 3000 },
       )
       expect(await screen.findByText('天安门', {}, FIND_OPTS)).toBeInTheDocument()
+    })
+
+    it('编辑标注时可重新搜索更换位置', async () => {
+      const fetchMock = vi.fn(async () => ({
+        ok: true,
+        json: async () => ({
+          status: '1',
+          pois: [
+            {
+              name: '北京南站',
+              typecode: '150400',
+              address: '永外大街车站路',
+              cityname: '北京市',
+              adname: '丰台区',
+              location: '116.3785,39.8652',
+            },
+          ],
+        }),
+      }))
+      vi.stubGlobal('fetch', fetchMock)
+      const user = userEvent.setup()
+      try {
+        const m = await makeMark('原标注')
+        renderPage()
+        await screen.findByText('原标注', {}, FIND_OPTS)
+        await user.click(screen.getByLabelText('编辑标注'))
+        await screen.findByDisplayValue('原标注', {}, FIND_OPTS)
+        await user.click(screen.getByRole('button', { name: '重新搜索' }))
+        const searchInput = await screen.findByLabelText('搜索地点', {}, FIND_OPTS)
+        await user.type(searchInput, '北京南站')
+        await user.click(
+          await screen.findByRole('button', { name: /北京南站/ }, FIND_OPTS),
+        )
+        await screen.findByDisplayValue('北京南站', {}, FIND_OPTS)
+        await user.click(screen.getByRole('button', { name: '保存' }))
+        await waitFor(
+          () => {
+            expect(
+              screen.queryByDisplayValue('北京南站'),
+            ).not.toBeInTheDocument()
+          },
+          { timeout: 3000 },
+        )
+        const got = await crud.getMapMark(m.id)
+        expect(got?.name).toBe('北京南站')
+        expect(got?.lat).toBe(39.8652)
+        expect(got?.lng).toBe(116.3785)
+        expect(got?.type).toBe('station')
+      } finally {
+        vi.unstubAllGlobals()
+      }
     })
 
     it('编辑标注：改名后保存生效', async () => {
@@ -319,6 +410,106 @@ describe('阶段 7：地图详情模块', () => {
       await waitFor(() => {
         expect(screen.getByTestId('map-view')).toBeInTheDocument()
       })
+    })
+  })
+
+  describe('地点检索服务', () => {
+    it('密文 Key 运行时解码为真实 Key 并随请求发送', async () => {
+      let calledUrl = ''
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async (url: string) => {
+          calledUrl = url
+          return {
+            ok: true,
+            json: async () => ({ status: '1', pois: [] }),
+          }
+        }),
+      )
+      try {
+        const { searchPlaces, decodeAmapKey } = await import('@/pages/Map/placeSearch')
+        await searchPlaces('故宫')
+        // 期望值取运行时解码结果，测试代码中不得硬编码真实 Key
+        expect(calledUrl).toContain(`key=${decodeAmapKey()}`)
+        expect(decodeAmapKey()).toMatch(/^[0-9a-f]{32}$/)
+        expect(calledUrl).toContain('/v3/place/text')
+      } finally {
+        vi.unstubAllGlobals()
+      }
+    })
+
+    it('正确解析 POI 返回：坐标、区域与推断类型', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({
+          ok: true,
+          json: async () => ({
+            status: '1',
+            pois: [
+              {
+                name: '全季酒店',
+                typecode: '100100',
+                address: '王府井大街',
+                cityname: '北京市',
+                adname: '东城区',
+                location: '116.41,39.91',
+              },
+              {
+                name: '火锅店',
+                typecode: '050100',
+                address: '簋街',
+                cityname: '北京市',
+                adname: '东城区',
+                location: '116.42,39.94',
+              },
+            ],
+          }),
+        })),
+      )
+      try {
+        const { searchPlaces } = await import('@/pages/Map/placeSearch')
+        const list = await searchPlaces('酒店')
+        expect(list).toHaveLength(2)
+        expect(list[0]).toMatchObject({
+          name: '全季酒店',
+          markType: 'hotel',
+          lat: 39.91,
+          lng: 116.41,
+          region: '北京市 · 东城区',
+          address: '王府井大街',
+        })
+        expect(list[1]!.markType).toBe('food')
+      } finally {
+        vi.unstubAllGlobals()
+      }
+    })
+
+    it('空关键词直接返回空；status 非 1 / HTTP 失败时返回空数组', async () => {
+      const { searchPlaces } = await import('@/pages/Map/placeSearch')
+      expect(await searchPlaces('   ')).toEqual([])
+
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({
+          ok: true,
+          json: async () => ({ status: '0', pois: [] }),
+        })),
+      )
+      try {
+        expect(await searchPlaces('xx')).toEqual([])
+      } finally {
+        vi.unstubAllGlobals()
+      }
+
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({ ok: false })),
+      )
+      try {
+        expect(await searchPlaces('xx')).toEqual([])
+      } finally {
+        vi.unstubAllGlobals()
+      }
     })
   })
 })
